@@ -8,7 +8,7 @@ import { MANIFEST, THEMES_DIR, checkManifest, checkThemePackage, packageIds, rea
 import { docPage, galleryPage, themePage } from "../scripts/themes-site.mjs";
 import { APPEARANCE_SCRIPT, homePage } from "../scripts/site.mjs";
 
-const OFFICIAL = ["typora.academic", "typora.ash", "typora.han", "typora.monospace", "typora.scribble"];
+const OFFICIAL = ["ignorance-shiyao.ignorance", "typora.academic", "typora.ash", "typora.han", "typora.monospace", "typora.scribble"];
 const manifest = (extra = {}) => ({
   id: "typora.ash",
   name: "Ash",
