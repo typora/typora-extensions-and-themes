@@ -1,0 +1,26 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <link rel="stylesheet" href="../shared.css" />
+    <link rel="stylesheet" href="viewer.css" />
+    <script src="../../__typora/view.js"></script>
+    <script src="jszip.js"></script>
+    <script src="mammoth.browser.js"></script>
+    <script type="module" src="viewer.js"></script>
+  </head>
+  <body>
+    <header>
+      <span class="ficon" id="icon" data-kind="docx" aria-hidden="true"></span>
+      <div class="title"><span id="name"></span><span id="info"></span></div>
+      <span class="spacer"></span>
+      <div class="seg" id="tabs" role="group" hidden></div>
+    </header>
+    <main>
+      <iframe id="doc" sandbox="" hidden></iframe>
+      <div id="sheet" hidden></div>
+      <div id="slides" hidden></div>
+      <div id="err" hidden></div>
+    </main>
+  </body>
+</html>

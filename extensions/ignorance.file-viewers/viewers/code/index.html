@@ -1,0 +1,33 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <link rel="stylesheet" href="../shared.css" />
+    <link rel="stylesheet" href="viewer.css" />
+    <script src="../../__typora/view.js"></script>
+    <script src="viewer.js" defer></script>
+  </head>
+  <body>
+    <header>
+      <span class="ficon" id="icon" data-kind="code" aria-hidden="true"></span>
+      <div class="title"><span id="name"></span><span id="info"></span></div>
+      <span id="dirty" hidden aria-label="未保存" title="未保存"><svg class="i" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="12" cy="12" r="5"/></svg></span>
+      <span class="spacer"></span>
+      <div class="seg" id="modes" role="group">
+        <button id="m-src" type="button" aria-pressed="true" aria-label="源码" title="源码"><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m16 18 6-6-6-6"/><path d="m8 6-6 6 6 6"/></svg></button>
+        <button id="m-view" type="button" aria-pressed="false" aria-label="预览" title="预览"><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2.06 12.35a1 1 0 0 1 0-.7 10.75 10.75 0 0 1 19.88 0 1 1 0 0 1 0 .7 10.75 10.75 0 0 1-19.88 0"/><circle cx="12" cy="12" r="3"/></svg></button>
+      </div>
+      <button id="save" type="button" disabled aria-label="保存" title="保存"><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15.2 3a2 2 0 0 1 1.4.6l3.8 3.8a2 2 0 0 1 .6 1.4V19a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2z"/><path d="M17 21v-7a1 1 0 0 0-1-1H8a1 1 0 0 0-1 1v7"/><path d="M7 3v4a1 1 0 0 0 1 1h7"/></svg></button>
+    </header>
+    <main>
+      <div id="editor">
+        <div id="gutter" aria-hidden="true"></div>
+        <div id="stack">
+          <pre id="hl" aria-hidden="true"></pre>
+          <textarea id="ta" spellcheck="false" wrap="off" autocomplete="off" autocapitalize="off"></textarea>
+        </div>
+      </div>
+      <iframe id="preview" sandbox="allow-scripts" hidden></iframe>
+    </main>
+  </body>
+</html>

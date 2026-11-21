@@ -1,0 +1,21 @@
+#dirty { color: var(--accent); }
+#save:not(:disabled) { background: var(--accent); border-color: var(--accent); color: #fff; }
+main { flex: 1; min-height: 0; display: flex; }
+#editor { flex: 1; display: flex; min-width: 0; }
+#gutter { flex: none; white-space: pre; overflow: hidden; padding: 10px 10px 10px 14px; text-align: right; color: var(--muted); user-select: none; border-inline-end: 1px solid var(--line); }
+#stack { flex: 1; position: relative; min-width: 0; }
+#gutter, #hl, #ta { font: 12.5px/1.6 var(--mono); tab-size: 2; letter-spacing: 0; }
+#hl, #ta { position: absolute; inset: 0; margin: 0; padding: 10px 14px; border: 0; white-space: pre; overflow: auto; box-sizing: border-box; }
+#hl { pointer-events: none; overflow: hidden; color: var(--fg); }
+#ta { resize: none; outline: none; background: transparent; color: transparent; caret-color: var(--fg); -webkit-text-fill-color: transparent; }
+#ta::selection { background: color-mix(in srgb, var(--accent) 28%, transparent); -webkit-text-fill-color: var(--fg); }
+#preview { flex: 1; border: 0; background: #fff; }
+.c-cm { color: var(--muted); font-style: italic; }
+.c-str { color: color-mix(in srgb, #15803d 80%, var(--fg)); }
+.c-num { color: color-mix(in srgb, var(--accent) 55%, #b45309); }
+.c-kw { color: var(--accent); font-weight: 500; }
+.c-tag { color: var(--accent); }
+.c-attr { color: color-mix(in srgb, var(--accent) 50%, #b45309); }
+@media (prefers-color-scheme: dark) { .c-str { color: #86efac; } }
+
+#dirty { display: inline-flex; }

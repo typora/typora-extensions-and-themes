@@ -1,0 +1,81 @@
+{
+  "id": "ignorance.file-viewers",
+  "name": "Ignorance File Viewers",
+  "version": "0.1.0",
+  "description": "在编辑区预览 json、yaml、toml、xml、html、代码以及 docx、xlsx、pptx 文件。",
+  "author": "ignorance-shiyao",
+  "repository": "https://github.com/ignorance-shiyao/ignorance-for-typora",
+  "engines": {
+    "typora": ">=2.0.0"
+  },
+  "keywords": [
+    "json",
+    "yaml",
+    "toml",
+    "xml",
+    "html",
+    "docx",
+    "xlsx",
+    "pptx",
+    "preview"
+  ],
+  "tags": [
+    "File Viewer"
+  ],
+  "contributes": {
+    "fileViewers": [
+      {
+        "id": "data",
+        "title": "结构化数据",
+        "extensions": [
+          "json",
+          "yaml",
+          "yml",
+          "toml",
+          "xml"
+        ],
+        "entry": "viewers/data/index.html",
+        "editable": false
+      },
+      {
+        "id": "code",
+        "title": "代码与网页",
+        "extensions": [
+          "html",
+          "htm",
+          "css",
+          "js",
+          "mjs",
+          "cjs",
+          "ts",
+          "tsx",
+          "jsx",
+          "py",
+          "java",
+          "go",
+          "rs",
+          "c",
+          "cpp",
+          "h",
+          "sh",
+          "zsh",
+          "sql",
+          "ini"
+        ],
+        "entry": "viewers/code/index.html",
+        "editable": true
+      },
+      {
+        "id": "office",
+        "title": "Office 文档",
+        "extensions": [
+          "docx",
+          "xlsx",
+          "pptx"
+        ],
+        "entry": "viewers/office/index.html",
+        "editable": false
+      }
+    ]
+  }
+}
