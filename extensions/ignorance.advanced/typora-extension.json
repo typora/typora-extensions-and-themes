@@ -1,0 +1,190 @@
+{
+  "id": "ignorance.advanced",
+  "name": "Ignorance Advanced",
+  "version": "0.1.0",
+  "description": "演示模式（内置图表与流程图）、行内徽章与彩色高亮、图表索引侧栏、中英文空格格式化。",
+  "author": "ignorance-shiyao",
+  "repository": "https://github.com/ignorance-shiyao/ignorance-for-typora",
+  "engines": {
+    "typora": ">=2.0.0"
+  },
+  "keywords": [
+    "slides",
+    "presentation",
+    "cjk",
+    "chinese",
+    "badge",
+    "template"
+  ],
+  "tags": [
+    "Markdown Extension",
+    "Detail View",
+    "Writing"
+  ],
+  "main": "main.js",
+  "activationEvents": [
+    "onStartupFinished"
+  ],
+  "contributes": {
+    "inlineRules": [
+      {
+        "id": "badge-open",
+        "pattern": "\\(\\((?:blue|green|orange|red|purple):(?=[^()|\\n]+\\|[^()\\n]+\\)\\))",
+        "class": "ib-syn"
+      },
+      {
+        "id": "badge-blue",
+        "pattern": "(?<=\\(\\(blue:)([^()|\\n]+?)\\s*\\|\\s*([^()\\n]*[^()\\s])(?=\\)\\))",
+        "class": "ib-badge ib-badge-blue",
+        "title": "$1 · $2"
+      },
+      {
+        "id": "badge-green",
+        "pattern": "(?<=\\(\\(green:)([^()|\\n]+?)\\s*\\|\\s*([^()\\n]*[^()\\s])(?=\\)\\))",
+        "class": "ib-badge ib-badge-green",
+        "title": "$1 · $2"
+      },
+      {
+        "id": "badge-orange",
+        "pattern": "(?<=\\(\\(orange:)([^()|\\n]+?)\\s*\\|\\s*([^()\\n]*[^()\\s])(?=\\)\\))",
+        "class": "ib-badge ib-badge-orange",
+        "title": "$1 · $2"
+      },
+      {
+        "id": "badge-red",
+        "pattern": "(?<=\\(\\(red:)([^()|\\n]+?)\\s*\\|\\s*([^()\\n]*[^()\\s])(?=\\)\\))",
+        "class": "ib-badge ib-badge-red",
+        "title": "$1 · $2"
+      },
+      {
+        "id": "badge-purple",
+        "pattern": "(?<=\\(\\(purple:)([^()|\\n]+?)\\s*\\|\\s*([^()\\n]*[^()\\s])(?=\\)\\))",
+        "class": "ib-badge ib-badge-purple",
+        "title": "$1 · $2"
+      },
+      {
+        "id": "badge-close",
+        "pattern": "(?<=\\(\\((?:blue|green|orange|red|purple):[^()|\\n]+\\|[^()\\n]+)\\)\\)",
+        "class": "ib-syn"
+      },
+      {
+        "id": "spoiler-open",
+        "pattern": "\\(\\(spoiler:(?=[^()\\n]+\\)\\))",
+        "class": "ib-syn"
+      },
+      {
+        "id": "spoiler",
+        "pattern": "(?<=\\(\\(spoiler:)[^()\\n]+(?=\\)\\))",
+        "class": "ib-spoiler",
+        "title": "悬停查看"
+      },
+      {
+        "id": "spoiler-close",
+        "pattern": "(?<=\\(\\(spoiler:[^()\\n]+)\\)\\)",
+        "class": "ib-syn"
+      },
+      {
+        "id": "ruby-open",
+        "pattern": "\\(\\(ruby:(?=[^()|\\n]+\\|[^()\\n]+\\)\\))",
+        "class": "ib-syn"
+      },
+      {
+        "id": "ruby",
+        "pattern": "(?<=\\(\\(ruby:)[^()|\\n]+?(?=\\s*\\|\\s*([^()\\n]+)\\)\\))",
+        "class": "ib-ruby",
+        "title": "$1"
+      },
+      {
+        "id": "ruby-close",
+        "pattern": "(?<=\\(\\(ruby:[^()|\\n]+?)\\s*\\|[^()\\n]+\\)\\)",
+        "class": "ib-syn"
+      },
+      {
+        "id": "crumb-open",
+        "pattern": "\\(\\(crumb:(?=[^()\\n]+\\)\\))",
+        "class": "ib-syn"
+      },
+      {
+        "id": "crumb",
+        "pattern": "(?<=\\(\\(crumb:)([^()\\n]+)(?=\\)\\))",
+        "class": "ib-crumb",
+        "title": "$1"
+      },
+      {
+        "id": "crumb-close",
+        "pattern": "(?<=\\(\\(crumb:[^()\\n]+)\\)\\)",
+        "class": "ib-syn"
+      },
+      {
+        "id": "hl-red",
+        "pattern": "🔴[^=\\s，。、；：！？,.;:!?]+",
+        "class": "ib-hl-red"
+      },
+      {
+        "id": "hl-orange",
+        "pattern": "🟠[^=\\s，。、；：！？,.;:!?]+",
+        "class": "ib-hl-orange"
+      },
+      {
+        "id": "hl-green",
+        "pattern": "🟢[^=\\s，。、；：！？,.;:!?]+",
+        "class": "ib-hl-green"
+      },
+      {
+        "id": "hl-blue",
+        "pattern": "🔵[^=\\s，。、；：！？,.;:!?]+",
+        "class": "ib-hl-blue"
+      },
+      {
+        "id": "hl-purple",
+        "pattern": "🟣[^=\\s，。、；：！？,.;:!?]+",
+        "class": "ib-hl-purple"
+      }
+    ],
+    "detailViews": [
+      {
+        "id": "figures",
+        "title": "图表与图片",
+        "icon": "chart",
+        "sfSymbol": "chart.bar.doc.horizontal",
+        "query": {
+          "block": [
+            "fences",
+            "table",
+            "math_block"
+          ],
+          "inline": [
+            "image"
+          ]
+        },
+        "item": {
+          "label": "{type} {lang} {text}",
+          "groupBy": "heading"
+        }
+      },
+      {
+        "id": "slides",
+        "title": "演示",
+        "icon": "image-play",
+        "sfSymbol": "play.rectangle",
+        "entry": "slides/index.html"
+      }
+    ],
+    "templates": "templates",
+    "snippets": "snippets",
+    "configuration": {
+      "title": "Ignorance Advanced",
+      "properties": {
+        "showMascot": {
+          "type": "boolean",
+          "default": false,
+          "title": "在演示里显示双猫",
+          "description": "封面右下角和最后一页。主题里的双猫在 设置 ▸ 视图 ▸ 主题选项「双猫」单独开关，默认都关闭。"
+        }
+      }
+    }
+  },
+  "permissions": {
+    "document": "read"
+  }
+}
