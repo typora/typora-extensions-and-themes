@@ -43,7 +43,14 @@ view.onRender(async ({ source, theme }) => {
   const id = `mermaid-${++renderId}`;
   try {
     const { svg } = await mermaid.render(id, source);
-    return { svg };
+    // Mermaid returns HTML-flavoured markup (unclosed <br>, &nbsp;, xlink:href without
+    // its namespace). Typora parses the result as XML, so serialize it as XML first.
+    const box = document.createElement("div");
+    box.innerHTML = svg;
+    const element = box.querySelector("svg");
+    if (!element) return { svg };
+    if (!element.getAttribute("xmlns:xlink")) element.setAttribute("xmlns:xlink", "http://www.w3.org/1999/xlink");
+    return { svg: new XMLSerializer().serializeToString(element) };
   } finally {
     // After a parse error Mermaid can leave its measuring element behind.
     document.getElementById(`d${id}`)?.remove();
