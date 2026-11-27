@@ -1,7 +1,7 @@
 {
   "id": "typora.mermaid",
   "name": "Mermaid.js",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Draws mermaid code blocks with the official Mermaid.js library, in place of Typora's built-in renderer.",
   "author": "Typora Team",
   "tags": ["Markdown Extension", "Diagram"],
