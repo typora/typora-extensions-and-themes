@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 // Drives the Cursor cloud-agent deep review for .github/workflows/ai-review.yml.
 //
+//   node scripts/ai-review.mjs guard <kind>   → the "Tooling guard" / "Content guard" job (tooling | content)
 //   node scripts/ai-review.mjs plan           → run=… reason=… forced=… runs=… (for $GITHUB_OUTPUT)
 //   node scripts/ai-review.mjs scan <dir…>    → content-rule matches in local folders
 //   node scripts/ai-review.mjs start          → agent_id=… agent_url=… (or ai-review-status.json)
@@ -13,7 +14,7 @@
 // before it is posted back to GitHub.
 
 import { execFileSync } from "node:child_process";
-import { existsSync, readdirSync, readFileSync, statSync, writeFileSync } from "node:fs";
+import { appendFileSync, existsSync, readdirSync, readFileSync, statSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 
 const API = "https://api.cursor.com/v1";
@@ -32,7 +33,7 @@ const CODE_FILE = /\.(m?js|cjs|jsx|ts|tsx|html?|wasm)$/i;
 const MANIFEST = "typora-extension.json";
 const CODE_KEYS = ["main", "background", "binaries", "permissions"];
 // Contributors don't change the store's tooling: such a PR fails the "Tooling
-// guard" check instead of being reviewed, unless a maintainer adds `allow-tooling`.
+// guard" job instead of being reviewed, unless a maintainer adds `allow-tooling`.
 const TOOLING =/^(scripts\/|tests\/|\.github\/|\.cursor\/|review\/|site\/|package(-lock)?\.json$|worker\.js$|headers\.js$|wrangler[^/]*\.toml$)/;
 const TRUSTED_AUTHORS = ["OWNER", "MEMBER", "COLLABORATOR"];
 const MAX_RUNS_PER_PR = Number(env("AI_REVIEW_MAX_PER_PR") || 5);
@@ -83,22 +84,39 @@ function stickyComment() {
 }
 
 // ── Guards ──────────────────────────────────────────────────────────────────
-/** Fails a contributor PR that changes the tooling. Returns why it failed, or null. */
+// Each guard is a job of its own, and that job is the required check: a check
+// run posted through the API lands in the commit's oldest check suite, and a
+// suite a superseded run left cancelled hides it from the merge box.
+
+/** `guard <kind>`: the job's summary says why; a failure fails the job. */
+function guard(kind) {
+  const run = { tooling: toolingGuard, content: contentGuard }[kind];
+  if (!run) throw new Error(`Unknown guard: ${kind}`);
+  const data = ghJson(`repos/${repo()}/pulls/${pr()}`);
+  const files = ghPages(`repos/${repo()}/pulls/${pr()}/files?per_page=100`);
+  run(data, files, data.labels.map((l) => l.name));
+}
+
+function verdict(conclusion, title, summary) {
+  console.log(`${conclusion === "failure" ? "::error::" : ""}${title}\n\n${summary}`);
+  if (env("GITHUB_STEP_SUMMARY")) appendFileSync(env("GITHUB_STEP_SUMMARY"), `### ${title}\n\n${summary}\n`);
+  if (conclusion === "failure") process.exitCode = 1;
+}
+
+/** Fails a contributor PR that changes the tooling. */
 function toolingGuard(data, files, labels) {
   const tooling = paths(files).filter((p) => !PACKAGE_FILE.test(p) && TOOLING.test(p));
-  if (!tooling.length) return checkRun("success", "No tooling changes", "Only package folders changed.", "Tooling guard"), null;
+  if (!tooling.length) return verdict("success", "No tooling changes", "Only package folders changed.");
   if (TRUSTED_AUTHORS.includes(data.author_association))
-    return checkRun("success", "Tooling changes by a maintainer", "The author can change the tooling; CODEOWNERS review applies.", "Tooling guard"), null;
+    return verdict("success", "Tooling changes by a maintainer", "The author can change the tooling; CODEOWNERS review applies.");
   const list = tooling.map((p) => `- \`${clean(p, 200)}\``).join("\n");
   if (labels.includes("allow-tooling"))
-    return checkRun("success", "Tooling changes accepted by a maintainer", `Accepted with \`allow-tooling\`:\n\n${list}`, "Tooling guard"), null;
-  checkRun(
+    return verdict("success", "Tooling changes accepted by a maintainer", `Accepted with \`allow-tooling\`:\n\n${list}`);
+  verdict(
     "failure",
     "Contributors can't change the store tooling",
     `This PR changes files outside \`extensions/\` and \`themes/\`:\n\n${list}\n\nMove those changes to a separate issue or PR for the maintainers. A maintainer can accept them here with the \`allow-tooling\` label.`,
-    "Tooling guard",
   );
-  return `tooling changed by a contributor: ${tooling.join(", ")}`;
 }
 
 // Content that has no business in an extension: reaching for the user's or
@@ -178,20 +196,18 @@ function contentGuard(data, files, labels) {
   if (!TRUSTED_AUTHORS.includes(data.author_association))
     for (const hit of scanText("PR description", `${data.title}\n${data.body ?? ""}`)) hits.push({ path: "PR description", ...hit });
 
-  if (!hits.length) return checkRun("success", "No suspicious content", "No content rule matched.", "Content guard"), null;
+  if (!hits.length) return verdict("success", "No suspicious content", "No content rule matched.");
   const list = hits
     .slice(0, 50)
     .map((h) => `- \`${clean(h.path, 200)}:${h.line}\` **${h.rule}** — ${h.message}: ${code(h.excerpt)}`)
     .join("\n");
   if (labels.includes("allow-content"))
-    return checkRun("success", "Content accepted by a maintainer", `Accepted with \`allow-content\`:\n\n${list}`, "Content guard"), null;
-  checkRun(
+    return verdict("success", "Content accepted by a maintainer", `Accepted with \`allow-content\`:\n\n${list}`);
+  verdict(
     "failure",
     `${hits.length} suspicious content match${hits.length === 1 ? "" : "es"}`,
     `${list}${hits.length > 50 ? `\n\n…and ${hits.length - 50} more.` : ""}\n\nExtensions don't touch credentials or secrets, send data to catch-all endpoints, address reviewers or AI, or hide characters. If this is a false positive, a maintainer can accept it with the \`allow-content\` label.`,
-    "Content guard",
   );
-  return `content guard: ${[...new Set(hits.map((h) => h.rule))].join(", ")}`;
 }
 
 /** `scan <dir…>`: run the content rules over local folders (to check rules for false positives). */
@@ -210,11 +226,11 @@ function scanLocal(dirs) {
 }
 
 function plan() {
-  const out = (run, reason, extra = {}, { check = true } = {}) => {
+  const out = (run, reason, extra = {}) => {
     const fields = { run, reason: reason.replace(/\n/g, " ").slice(0, 900), ...extra };
     for (const [k, v] of Object.entries(fields)) console.log(`${k}=${v}`);
     // Say why on the PR's checks, except for events that aren't about this review.
-    if (!run && check && reason !== "unrelated label" && reason !== "PR is not open")
+    if (!run && reason !== "unrelated label" && reason !== "PR is not open")
       checkRun("skipped", `AI review skipped: ${clean(reason, 120)}`, clean(fields.reason, 900));
   };
   const action = env("EVENT_ACTION");
@@ -228,17 +244,7 @@ function plan() {
 
   const head = data.head.sha;
   const base = data.base.sha;
-  process.env.HEAD_SHA ||= head; // workflow_dispatch has no pull_request payload
   const files = ghPages(`repos/${repo()}/pulls/${pr()}/files?per_page=100`);
-
-  // Both guards post on every head, so they can be required checks. A failing
-  // guard fails the job and the PR isn't sent to the AI.
-  const failed = [toolingGuard(data, files, labels), contentGuard(data, files, labels)].filter(Boolean);
-  if (failed.length) {
-    process.exitCode = 1;
-    return out(false, failed.join("; "), {}, { check: false });
-  }
-  if (env("EVENT_NAME") === "workflow_dispatch") return out(false, "guards only (manual run)", {}, { check: false });
 
   if (labels.includes("no-ai-review")) return out(false, "labelled no-ai-review");
   if (data.draft && !forced) return out(false, "draft");
@@ -460,12 +466,13 @@ function report(file) {
 }
 
 const [command, arg, ...rest] = process.argv.slice(2);
-if (command === "plan") plan();
+if (command === "guard") guard(arg);
+else if (command === "plan") plan();
 else if (command === "scan") scanLocal([arg, ...rest].filter(Boolean));
 else if (command === "start") await start();
 else if (command === "wait") await wait();
 else if (command === "report") report(arg);
 else {
-  console.error("Usage: ai-review.mjs plan | scan <dir…> | start | wait | report <file>");
+  console.error("Usage: ai-review.mjs guard <tooling|content> | plan | scan <dir…> | start | wait | report <file>");
   process.exit(2);
 }
