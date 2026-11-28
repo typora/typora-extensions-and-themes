@@ -1,0 +1,13 @@
+{
+  "id": "ignorance-shiyao.ignorance",
+  "name": "Ignorance",
+  "version": "0.1.0",
+  "description": "纸面正文、中文排版与八套浅深配色，附提示块、容器、属性卡和圆角卡片布局。",
+  "author": "ignorance-shiyao",
+  "repository": "https://github.com/ignorance-shiyao/ignorance-for-typora",
+  "keywords": ["chinese", "cjk", "中文", "paper", "palette"],
+  "tags": ["Theme"],
+  "contributes": {
+    "themes": ["themes/ignorance"]
+  }
+}

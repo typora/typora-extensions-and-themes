@@ -1,0 +1,832 @@
+/*
+ * Ignorance for Typora 2.0
+ * Sizes, fonts and colours live in theme.toml; this file adds what the TOML
+ * tables cannot express. Colours always come from Typora's --color-*
+ * variables so the palette variants recolour everything here too.
+ *
+ * Every rule is scoped to both the editor (.ty-document) and exported HTML
+ * (.typora-export), which wraps the document in a different root.
+ * Rules: class and attribute selectors only, no sibling/position selectors
+ * across blocks (long documents only render the visible blocks).
+ * No one-sided accent bars anywhere: Typora's own defaults for alerts,
+ * containers and quotes use border-inline-start and are overridden here.
+ */
+
+:is(.ty-document, .typora-export) {
+  --ib-radius-sm: 4px;
+  --ib-radius-md: 8px;
+  --ib-radius-lg: 12px;
+  --ib-tint: color-mix(in srgb, var(--color-accent) calc(6% * (1 - var(--theme-eink, 0))), var(--color-bg));
+  --ib-tint-strong: color-mix(in srgb, var(--color-accent) calc(12% * (1 - var(--theme-eink, 0))), var(--color-bg));
+  --ib-line: color-mix(in srgb, var(--color-text) calc(12% + 48% * var(--theme-eink, 0)), var(--color-bg));
+  --ib-serif: Georgia, "Noto Serif SC", "Source Han Serif SC", "Songti SC", STSong, serif;
+  font-variant-numeric: tabular-nums;
+  text-rendering: optimizeLegibility;
+}
+
+:is(.ty-document, .typora-export) .md-h1 {
+  letter-spacing: -0.01em;
+}
+/* h1 to h3 use the serif heading font; h4 to h6 are small sans headings. */
+:is(.ty-document, .typora-export) :is(.md-h4, .md-h5, .md-h6) {
+  font-family: var(--ty-body-font);
+}
+
+/* ---------- quotes: tinted card, serif quote mark, no side bar ---------- */
+:is(.ty-document, .typora-export) :is(.md-blockquote, .md-html-block-preview blockquote) {
+  position: relative;
+  border: 0;
+  border-inline-start: 0;
+  border-radius: var(--ib-radius-lg);
+  background: var(--ib-tint);
+  color: var(--color-text);
+  font-family: var(--ib-serif);
+}
+/* Typora's own quote icon (Boxicons, MIT: github.com/box-icons/boxicons-core),
+   tinted with the accent. Typora only draws it in the editor, so the theme draws
+   it too and export gets the same mark. Only the outermost quote carries it. */
+/* Each level carries the mark; deeper levels step down in text size, mark size
+   and colour (--ib-q-*). */
+:is(.ty-document, .typora-export) .md-blockquote {
+  --ib-q-size: 18px;
+  --ib-q-ink: 55%;
+  --ib-q-text: 100%;
+  margin-inline: 0;
+  padding-inline: 46px 18px;
+  color: color-mix(in srgb, var(--color-text) var(--ib-q-text), var(--color-bg));
+}
+:is(.ty-document, .typora-export) .md-blockquote::before {
+  content: "";
+  display: block;
+  position: absolute;
+  top: calc(12px + 0.22em);
+  inset-inline-start: 16px;
+  width: var(--ib-q-size);
+  height: var(--ib-q-size);
+  background: color-mix(in srgb, var(--color-accent) var(--ib-q-ink), var(--ib-tint));
+  -webkit-mask: url("data:image/svg+xml,%3csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2024%2024'%3e%3cpath%20d='M21.01%2010h-2.85c.27-1.02%201.01-2.51%203.09-3.03l.76-.19V4h-1c-2.78%200-4.91.77-6.31%202.29c-1.89%202.05-1.7%204.68-1.69%204.71v7c0%201.1.9%202%202%202h6c1.1%200%202-.9%202-2v-6c0-1.1-.9-2-2-2m-12%200H6.16c.27-1.02%201.01-2.51%203.09-3.03l.76-.19V4h-1C6.23%204%204.1%204.77%202.7%206.29C.81%208.34%201%2010.97%201.01%2011v7c0%201.1.9%202%202%202h6c1.1%200%202-.9%202-2v-6c0-1.1-.9-2-2-2'/%3e%3c/svg%3e") 50% / contain no-repeat;
+  mask: url("data:image/svg+xml,%3csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2024%2024'%3e%3cpath%20d='M21.01%2010h-2.85c.27-1.02%201.01-2.51%203.09-3.03l.76-.19V4h-1c-2.78%200-4.91.77-6.31%202.29c-1.89%202.05-1.7%204.68-1.69%204.71v7c0%201.1.9%202%202%202h6c1.1%200%202-.9%202-2v-6c0-1.1-.9-2-2-2m-12%200H6.16c.27-1.02%201.01-2.51%203.09-3.03l.76-.19V4h-1C6.23%204%204.1%204.77%202.7%206.29C.81%208.34%201%2010.97%201.01%2011v7c0%201.1.9%202%202%202h6c1.1%200%202-.9%202-2v-6c0-1.1-.9-2-2-2'/%3e%3c/svg%3e") 50% / contain no-repeat;
+  pointer-events: none;
+}
+:is(.ty-document, .typora-export) .md-blockquote::after { content: none; }
+:is(.ty-document, .typora-export) .md-blockquote > :not(.md-blockquote) {
+  color: color-mix(in srgb, var(--color-text) var(--ib-q-text), var(--color-bg));
+}
+:is(.ty-document, .typora-export) .md-blockquote .md-blockquote {
+  margin-inline: -46px -18px;
+  width: calc(100% + 64px);
+  max-width: none;
+  box-sizing: border-box;
+  margin-block: 0.6em 0.2em;
+  --ib-q-size: 15px;
+  --ib-q-ink: 40%;
+  --ib-q-text: 78%;
+  font-size: 0.94em;
+  background: color-mix(in srgb, var(--color-accent) calc(5% * (1 - var(--theme-eink, 0))), transparent);
+}
+:is(.ty-document, .typora-export) .md-blockquote .md-blockquote .md-blockquote {
+  --ib-q-size: 13px;
+  --ib-q-ink: 28%;
+  --ib-q-text: 62%;
+  font-size: 0.94em;
+  background: color-mix(in srgb, var(--color-accent) calc(5% * (1 - var(--theme-eink, 0))), transparent);
+}
+:is(.ty-document, .typora-export) .md-blockquote .md-blockquote::before { top: calc(12px + 0.25em); inset-inline-start: 14px; }
+:is(.ty-document, .typora-export) .md-html-block-preview blockquote::before { content: none; }
+
+/* ---------- GitHub alerts: full tinted card ---------- */
+:is(.ty-document, .typora-export) .md-alert {
+  --ib-alert: var(--color-alert-note);
+  border: 1px solid color-mix(in srgb, var(--ib-alert) calc(28% + 52% * var(--theme-eink, 0)), transparent);
+  border-inline-start: 1px solid color-mix(in srgb, var(--ib-alert) calc(28% + 52% * var(--theme-eink, 0)), transparent);
+  border-radius: var(--ib-radius-md);
+  background: color-mix(in srgb, var(--ib-alert) calc(10% * (1 - var(--theme-eink, 0))), var(--color-bg));
+  box-shadow: none;
+}
+:is(.ty-document, .typora-export) .md-alert::after { content: none; }
+/* Alert title icons (Lucide, ISC): Typora's own svg is hidden and these are drawn instead. */
+:is(.ty-document, .typora-export) .md-alert-text svg { display: none; }
+:is(.ty-document, .typora-export) .md-alert-text-container::before {
+  content: "";
+  flex: none;
+  width: 15px;
+  height: 15px;
+  background: currentColor;
+  -webkit-mask: var(--ib-alert-icon) center / contain no-repeat;
+  mask: var(--ib-alert-icon) center / contain no-repeat;
+}
+:is(.ty-document, .typora-export) .md-alert-note { --ib-alert-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='12' r='10'/%3E%3Cpath d='M12 16v-4'/%3E%3Cpath d='M12 8h.01'/%3E%3C/svg%3E"); }
+:is(.ty-document, .typora-export) .md-alert-tip { --ib-alert-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5'/%3E%3Cpath d='M9 18h6'/%3E%3Cpath d='M10 22h4'/%3E%3C/svg%3E"); }
+:is(.ty-document, .typora-export) .md-alert-important { --ib-alert-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z'/%3E%3Cpath d='M4 22v-7'/%3E%3C/svg%3E"); }
+:is(.ty-document, .typora-export) .md-alert-warning { --ib-alert-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3'/%3E%3Cpath d='M12 9v4'/%3E%3Cpath d='M12 17h.01'/%3E%3C/svg%3E"); }
+:is(.ty-document, .typora-export) .md-alert-caution { --ib-alert-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M2.586 16.726A2 2 0 0 1 2 15.312V8.688a2 2 0 0 1 .586-1.414l4.688-4.688A2 2 0 0 1 8.688 2h6.624a2 2 0 0 1 1.414.586l4.688 4.688A2 2 0 0 1 22 8.688v6.624a2 2 0 0 1-.586 1.414l-4.688 4.688a2 2 0 0 1-1.414.586H8.688a2 2 0 0 1-1.414-.586z'/%3E%3Cpath d='m15 9-6 6'/%3E%3Cpath d='m9 9 6 6'/%3E%3C/svg%3E"); }
+:is(.ty-document, .typora-export) .md-alert-tip { --ib-alert: var(--color-alert-tip); }
+:is(.ty-document, .typora-export) .md-alert-important { --ib-alert: var(--color-alert-important); }
+:is(.ty-document, .typora-export) .md-alert-warning { --ib-alert: var(--color-alert-warning); }
+:is(.ty-document, .typora-export) .md-alert-caution { --ib-alert: var(--color-alert-caution); }
+:is(.ty-document, .typora-export) .md-alert :is(.md-alert-text, .md-alert-title) {
+  color: var(--ib-alert);
+  font-weight: 600;
+}
+
+/* ---------- ::: containers (Settings ▸ Markdown ▸ Custom Containers) ---------- */
+:is(.ty-document, .typora-export) .md-custom-container {
+  --md-custom-container-color: var(--color-accent);
+  margin: 1em 0;
+  padding: 0.4em 1em 0.5em;
+  border: 1px solid var(--ib-line);
+  border-inline-start-width: 1px;
+  border-radius: var(--ib-radius-lg);
+  background: color-mix(in srgb, var(--color-text) calc(2% * (1 - var(--theme-eink, 0))), var(--color-bg));
+}
+:is(.ty-document, .typora-export) .md-custom-container-title {
+  margin: 0.4em 0 0.2em;
+  color: var(--md-custom-container-color);
+  font-size: 0.85em;
+  font-weight: 600;
+}
+
+/* Semantic callouts get the tinted card of the alert with the same meaning. */
+:is(.ty-document, .typora-export) :is(.md-custom-container--note, .md-custom-container--info, .md-custom-container--tip,
+  .md-custom-container--success, .md-custom-container--warning, .md-custom-container--danger, .md-custom-container--caution,
+  .md-custom-container--question, .md-custom-container--important) {
+  border-color: color-mix(in srgb, var(--md-custom-container-color) calc(28% + 52% * var(--theme-eink, 0)), transparent);
+  background: color-mix(in srgb, var(--md-custom-container-color) calc(7% * (1 - var(--theme-eink, 0))), var(--color-bg));
+}
+:is(.ty-document, .typora-export) :is(.md-custom-container--note, .md-custom-container--info) { --md-custom-container-color: var(--color-alert-note); }
+:is(.ty-document, .typora-export) :is(.md-custom-container--tip, .md-custom-container--success) { --md-custom-container-color: var(--color-alert-tip); }
+:is(.ty-document, .typora-export) .md-custom-container--warning { --md-custom-container-color: var(--color-alert-warning); }
+:is(.ty-document, .typora-export) :is(.md-custom-container--danger, .md-custom-container--caution) { --md-custom-container-color: var(--color-alert-caution); }
+:is(.ty-document, .typora-export) :is(.md-custom-container--question, .md-custom-container--important) { --md-custom-container-color: var(--color-alert-important); }
+
+/* Callout containers: the host draws an svg only for some types, which leaves an uneven gap before the title.
+   Hide it and draw one icon per type, same set and size as the alerts. */
+:is(.ty-document, .typora-export) .md-custom-container-title svg { display: none; }
+:is(.ty-document, .typora-export) :is(.md-custom-container--note, .md-custom-container--info, .md-custom-container--tip,
+  .md-custom-container--success, .md-custom-container--warning, .md-custom-container--danger, .md-custom-container--caution,
+  .md-custom-container--question, .md-custom-container--important) .md-custom-container-title::before {
+  content: "";
+  flex: none;
+  width: 15px;
+  height: 15px;
+  background: currentColor;
+  -webkit-mask: var(--ib-ci) center / contain no-repeat;
+  mask: var(--ib-ci) center / contain no-repeat;
+}
+:is(.ty-document, .typora-export) :is(.md-custom-container--note, .md-custom-container--info) { --ib-ci: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='12' r='10'/%3E%3Cpath d='M12 16v-4'/%3E%3Cpath d='M12 8h.01'/%3E%3C/svg%3E"); }
+:is(.ty-document, .typora-export) :is(.md-custom-container--tip) { --ib-ci: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5'/%3E%3Cpath d='M9 18h6'/%3E%3Cpath d='M10 22h4'/%3E%3C/svg%3E"); }
+:is(.ty-document, .typora-export) :is(.md-custom-container--success) { --ib-ci: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='12' r='10'/%3E%3Cpath d='m9 12 2 2 4-4'/%3E%3C/svg%3E"); }
+:is(.ty-document, .typora-export) :is(.md-custom-container--warning) { --ib-ci: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3'/%3E%3Cpath d='M12 9v4'/%3E%3Cpath d='M12 17h.01'/%3E%3C/svg%3E"); }
+:is(.ty-document, .typora-export) :is(.md-custom-container--danger, .md-custom-container--caution) { --ib-ci: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M2.586 16.726A2 2 0 0 1 2 15.312V8.688a2 2 0 0 1 .586-1.414l4.688-4.688A2 2 0 0 1 8.688 2h6.624a2 2 0 0 1 1.414.586l4.688 4.688A2 2 0 0 1 22 8.688v6.624a2 2 0 0 1-.586 1.414l-4.688 4.688a2 2 0 0 1-1.414.586H8.688a2 2 0 0 1-1.414-.586z'/%3E%3Cpath d='m15 9-6 6'/%3E%3Cpath d='m9 9 6 6'/%3E%3C/svg%3E"); }
+:is(.ty-document, .typora-export) :is(.md-custom-container--question) { --ib-ci: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='12' r='10'/%3E%3Cpath d='M9.1 9a3 3 0 0 1 5.8 1c0 2-3 3-3 3'/%3E%3Cpath d='M12 17h.01'/%3E%3C/svg%3E"); }
+:is(.ty-document, .typora-export) :is(.md-custom-container--important) { --ib-ci: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z'/%3E%3Cpath d='M4 22v-7'/%3E%3C/svg%3E"); }
+
+/* Exported HTML has no title element; show the type name instead. */
+.typora-export :is(.md-custom-container--note, .md-custom-container--info, .md-custom-container--tip, .md-custom-container--success,
+  .md-custom-container--warning, .md-custom-container--danger, .md-custom-container--caution, .md-custom-container--question,
+  .md-custom-container--important)::before {
+  display: block;
+  margin: 0.4em 0 0.2em;
+  color: var(--md-custom-container-color);
+  font-size: 0.85em;
+  font-weight: 600;
+}
+.typora-export .md-custom-container--note::before { content: "说明"; }
+.typora-export .md-custom-container--info::before { content: "信息"; }
+.typora-export .md-custom-container--tip::before { content: "提示"; }
+.typora-export .md-custom-container--success::before { content: "完成"; }
+.typora-export .md-custom-container--warning::before { content: "注意"; }
+.typora-export :is(.md-custom-container--danger, .md-custom-container--caution)::before { content: "危险"; }
+.typora-export .md-custom-container--question::before { content: "问题"; }
+.typora-export .md-custom-container--important::before { content: "重要"; }
+
+/* Layout containers: columns, cards, panels. */
+:is(.ty-document, .typora-export) :is(.md-custom-container--cols, .md-custom-container--compare, .md-custom-container--tabs, .md-custom-container--kpi) {
+  padding: 0;
+  border: 0;
+  background: none;
+}
+:is(.ty-document, .typora-export) .md-custom-container--cols {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: minmax(0, 1fr);
+  gap: 16px;
+}
+:is(.ty-document, .typora-export) .md-custom-container--cols > .md-custom-container-title { display: none; }
+:is(.ty-document, .typora-export) .md-custom-container--cols > .md-custom-container { margin: 0; }
+:is(.ty-document, .typora-export) .md-custom-container--col {
+  border-color: transparent;
+  background: none;
+  padding-inline: 0;
+}
+:is(.ty-document, .typora-export) .md-custom-container--compare .md-p {
+  display: flex;
+  box-sizing: border-box;
+  width: 100%;
+  align-items: flex-start;
+  gap: 12px;
+}
+:is(.ty-document, .typora-export) .md-custom-container--compare .md-p br { display: none; }
+:is(.ty-document, .typora-export) .md-custom-container--compare .md-p .md-image { flex: 1 1 0; min-width: 0; margin: 0; }
+:is(.ty-document, .typora-export) .md-custom-container--compare .md-p img { display: block; width: 100%; height: auto; }
+:is(.ty-document, .typora-export) .md-custom-container--tabs {
+  display: grid;
+  gap: 10px;
+}
+
+/* KPI cards: each list item becomes a number card. */
+:is(.ty-document, .typora-export) .md-custom-container--kpi .md-list {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: minmax(0, 1fr);
+  gap: 12px;
+  padding: 0;
+  list-style: none;
+}
+:is(.ty-document, .typora-export) .md-custom-container--kpi .md-list-item {
+  padding: 0.6em 0.9em;
+  border-radius: var(--ib-radius-lg);
+  background: var(--ib-tint);
+  color: var(--color-muted);
+  font-size: 0.9em;
+}
+:is(.ty-document, .typora-export) .md-custom-container--kpi .md-list-item::marker { content: none; }
+/* Typora draws the bullet with ::after, not ::marker. */
+:is(.ty-document, .typora-export) .md-custom-container--kpi .md-list-item::after { content: none; }
+:is(.ty-document, .typora-export) .md-custom-container--kpi strong {
+  display: block;
+  color: var(--color-accent);
+  font-size: 1.8em;
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+/* Timeline / steps / process: numbered dots at the start of each item, no side rule.
+   The dot is positioned in the item's own padding, so it never overlaps the text. */
+:is(.ty-document, .typora-export) :is(.md-custom-container--timeline, .md-custom-container--steps, .md-custom-container--process, .md-custom-container--roadmap) .md-list {
+  counter-reset: ib-step;
+  margin: 0.4em 0 0.2em;
+  padding: 0;
+  list-style: none;
+}
+:is(.ty-document, .typora-export) :is(.md-custom-container--timeline, .md-custom-container--steps, .md-custom-container--process, .md-custom-container--roadmap) .md-list-item {
+  counter-increment: ib-step;
+  position: relative;
+  display: block;
+  margin: 0 0 0.9em;
+  padding-inline-start: 2.8em;
+  min-height: 1.9em;
+  line-height: 1.7;
+}
+:is(.ty-document, .typora-export) :is(.md-custom-container--timeline, .md-custom-container--steps, .md-custom-container--process, .md-custom-container--roadmap) .md-list-item::marker { content: none; }
+:is(.ty-document, .typora-export) :is(.md-custom-container--timeline, .md-custom-container--steps, .md-custom-container--process, .md-custom-container--roadmap) .md-list-item::after {
+  content: counter(ib-step);
+  position: absolute;
+  inset-inline-start: 0.2em;
+  top: 0.45em;
+  width: 1.9em;
+  height: 1.9em;
+  border-radius: 50%;
+  background: var(--ib-tint-strong);
+  color: var(--color-accent);
+  font-size: 0.85em;
+  font-weight: 600;
+  line-height: 1.9em;
+  text-align: center;
+}
+
+/* ---------- tables ---------- */
+:is(.ty-document, .typora-export) .md-table th {
+  background: color-mix(in srgb, var(--color-accent) calc(6% * (1 - var(--theme-eink, 0))), var(--color-bg));
+  font-weight: 600;
+}
+
+/* ---------- inline ---------- */
+:is(.ty-document, .typora-export) mark {
+  padding: 0 2px;
+  border-radius: var(--ib-radius-sm);
+  background: color-mix(in srgb, var(--color-highlight-bg) calc(100% * (1 - var(--theme-eink, 0))), transparent);
+  color: inherit;
+  text-decoration: var(--theme-eink-mark, none);
+}
+:is(.ty-document, .typora-export) kbd {
+  display: inline-block;
+  padding: 1px 8px;
+  border: 1px solid var(--ib-line);
+  border-radius: 999px;
+  background: var(--color-muted-bg);
+  color: var(--color-text);
+  font-size: 0.8em;
+  font-weight: 600;
+  line-height: 1.5;
+  vertical-align: 0.08em;
+}
+:is(.ty-document, .typora-export) del {
+  color: var(--color-del);
+}
+
+/* ---------- task lists ---------- */
+:is(.ty-document, .typora-export) .md-task-list-control {
+  border-radius: 50%;
+  accent-color: var(--color-accent);
+}
+/* Exported HTML ships no task-list layout: box and text on one line. */
+.typora-export .md-list-task {
+  padding-inline-start: 0.2em;
+  list-style: none;
+}
+.typora-export .md-task-list-item {
+  display: flex;
+  gap: 0.55em;
+  align-items: baseline;
+}
+.typora-export .md-task-list-item > .md-task-list-control {
+  flex: none;
+  margin: 0;
+  transform: translateY(0.12em);
+}
+.typora-export .md-task-list-item > .md-p { margin: 0; }
+
+/* ---------- exported outline sidebar ----------
+ * Typora fills the sidebar links with the heading's raw markup, so entries read "## 标题" or "###### a *b*".
+ * Without a script the marks cannot be removed, so the font below shrinks "#", "*", "`" and "~" to nothing.
+ * Side effect: a literal "#" in a heading (C#) disappears from the sidebar too. */
+@font-face {
+  font-family: "ib-nomark";
+  src: local("Arial"), local("Helvetica"), local("Segoe UI");
+  unicode-range: U+0023, U+002A, U+0060, U+007E;
+  size-adjust: 1%;
+}
+.typora-export-sidebar {
+  padding: 24px 10px;
+  background: color-mix(in srgb, var(--color-text) 3%, var(--color-bg));
+  box-shadow: 1px 0 0 color-mix(in srgb, var(--color-text) 10%, var(--color-bg));
+  font-family: "ib-nomark", var(--ty-body-font, system-ui, sans-serif);
+}
+.typora-export-sidebar a {
+  padding: 5px 10px;
+  border-radius: 8px;
+  color: var(--color-muted);
+  font-size: 13px;
+  line-height: 1.45;
+  overflow-wrap: anywhere;
+  transition: background-color 0.12s, color 0.12s;
+}
+.typora-export-sidebar a:hover {
+  background: color-mix(in srgb, var(--color-accent) 9%, var(--color-bg));
+  color: var(--color-text);
+}
+/* A script in Settings ▸ Export ▸ HTML ▸ "Add in <body />" cleans the labels and marks the section being read. */
+.typora-export-sidebar.ib-clean { font-family: var(--ty-body-font, system-ui, sans-serif); }
+.typora-export-sidebar a.is-current {
+  background: color-mix(in srgb, var(--color-accent) 12%, var(--color-bg));
+  color: var(--color-accent);
+}
+.typora-export-sidebar .typora-export-outline-level-1 { padding-left: 10px; color: var(--color-text); font-weight: 600; }
+.typora-export-sidebar .typora-export-outline-level-2 { padding-left: 22px !important; }
+.typora-export-sidebar .typora-export-outline-level-3 { padding-left: 34px !important; }
+.typora-export-sidebar :is(.typora-export-outline-level-4, .typora-export-outline-level-5, .typora-export-outline-level-6) { padding-left: 46px !important; }
+
+/* Narrow screens: no room for a 260px sidebar. */
+@media (max-width: 820px) {
+  .typora-export-sidebar { display: none; }
+  .typora-export--with-sidebar .typora-export-content { margin-left: auto; }
+}
+
+/* ---------- [toc]: one entry per line, levels told apart by type and marker, not by indent ---------- */
+.typora-export .md-toc {
+  margin: 1em 0;
+  padding: 0.8em 1em;
+  border: 1px solid var(--ib-line);
+  border-radius: var(--ib-radius-lg);
+}
+:is(.ty-document, .typora-export) .md-toc-item {
+  display: block;
+  margin-inline-start: 0 !important;
+  padding-inline-start: 0 !important;
+  text-indent: 0 !important;
+  line-height: 1.9;
+}
+:is(.ty-document, .typora-export) .md-toc-inner {
+  margin-inline-start: 0 !important;
+  padding-inline-start: 0 !important;
+  text-indent: 0 !important;
+  text-decoration: none;
+}
+:is(.ty-document, .typora-export) .md-toc-h1 { font-size: 1.08em; font-weight: 700; color: var(--color-accent); }
+:is(.ty-document, .typora-export) .md-toc-h2 { font-size: 1em; font-weight: 600; }
+:is(.ty-document, .typora-export) .md-toc-h3 { font-size: 0.94em; font-weight: 500; opacity: 0.92; }
+:is(.ty-document, .typora-export) .md-toc-h4 { font-size: 0.9em; font-weight: 400; opacity: 0.84; }
+:is(.ty-document, .typora-export) .md-toc-h5 { font-size: 0.86em; font-weight: 400; opacity: 0.8; }
+:is(.ty-document, .typora-export) .md-toc-h6 { font-size: 0.82em; font-weight: 400; opacity: 0.7; }
+
+/* ---------- nested lists: narrow step, depth shown by size, weight and marker tint ---------- */
+:is(.ty-document, .typora-export) :is(.md-list, ul, ol) :is(.md-list, ul, ol) {
+  padding-inline-start: 1.3em;
+}
+:is(.ty-document, .typora-export) .md-list-item::marker { color: var(--color-accent); }
+:is(.ty-document, .typora-export) .md-list .md-list { font-size: 0.97em; }
+:is(.ty-document, .typora-export) .md-list .md-list .md-list { font-size: 0.94em; }
+:is(.ty-document, .typora-export) .md-list .md-list .md-list-item::marker { color: color-mix(in srgb, var(--color-accent) 70%, var(--color-bg)); }
+:is(.ty-document, .typora-export) .md-list .md-list .md-list .md-list-item::marker { color: color-mix(in srgb, var(--color-accent) 45%, var(--color-bg)); }
+:is(.ty-document, .typora-export) .md-list > .md-list-item > .md-list-item-content > :first-child,
+:is(.ty-document, .typora-export) .md-list > .md-list-item > :first-child { font-weight: 500; }
+
+/* ---------- file tree: icon per file type (Material Design Icons, Apache-2.0: pictogrammers.com/library/mdi) ---------- */
+.wb-tree-row:not(.wb-tree-row--dir)[data-path$=".md" i] .wb-tree-icon > svg, .wb-tree-row:not(.wb-tree-row--dir)[data-path$=".markdown" i] .wb-tree-icon > svg, .wb-tree-row:not(.wb-tree-row--dir)[data-path$=".html" i] .wb-tree-icon > svg, .wb-tree-row:not(.wb-tree-row--dir)[data-path$=".htm" i] .wb-tree-icon > svg, .wb-tree-row:not(.wb-tree-row--dir)[data-path$=".css" i] .wb-tree-icon > svg, .wb-tree-row:not(.wb-tree-row--dir)[data-path$=".js" i] .wb-tree-icon > svg, .wb-tree-row:not(.wb-tree-row--dir)[data-path$=".mjs" i] .wb-tree-icon > svg, .wb-tree-row:not(.wb-tree-row--dir)[data-path$=".cjs" i] .wb-tree-icon > svg, .wb-tree-row:not(.wb-tree-row--dir)[data-path$=".jsx" i] .wb-tree-icon > svg, .wb-tree-row:not(.wb-tree-row--dir)[data-path$=".ts" i] .wb-tree-icon > svg, .wb-tree-row:not(.wb-tree-row--dir)[data-path$=".tsx" i] .wb-tree-icon > svg, .wb-tree-row:not(.wb-tree-row--dir)[data-path$=".py" i] .wb-tree-icon > svg, .wb-tree-row:not(.wb-tree-row--dir)[data-path$=".java" i] .wb-tree-icon > svg, .wb-tree-row:not(.wb-tree-row--dir)[data-path$=".go" i] .wb-tree-icon > svg, .wb-tree-row:not(.wb-tree-row--dir)[data-path$=".rs" i] .wb-tree-icon > svg, .wb-tree-row:not(.wb-tree-row--dir)[data-path$=".c" i] .wb-tree-icon > svg, .wb-tree-row:not(.wb-tree-row--dir)[data-path$=".h" i] .wb-tree-icon > svg, .wb-tree-row:not(.wb-tree-row--dir)[data-path$=".cpp" i] .wb-tree-icon > svg, .wb-tree-row:not(.wb-tree-row--dir)[data-path$=".sh" i] .wb-tree-icon > svg, .wb-tree-row:not(.wb-tree-row--dir)[data-path$=".zsh" i] .wb-tree-icon > svg, .wb-tree-row:not(.wb-tree-row--dir)[data-path$=".sql" i] .wb-tree-icon > svg, .wb-tree-row:not(.wb-tree-row--dir)[data-path$=".json" i] .wb-tree-icon > svg, .wb-tree-row:not(.wb-tree-row--dir)[data-path$=".yaml" i] .wb-tree-icon > svg, .wb-tree-row:not(.wb-tree-row--dir)[data-path$=".yml" i] .wb-tree-icon > svg, .wb-tree-row:not(.wb-tree-row--dir)[data-path$=".toml" i] .wb-tree-icon > svg, .wb-tree-row:not(.wb-tree-row--dir)[data-path$=".ini" i] .wb-tree-icon > svg, .wb-tree-row:not(.wb-tree-row--dir)[data-path$=".xml" i] .wb-tree-icon > svg, .wb-tree-row:not(.wb-tree-row--dir)[data-path$=".csv" i] .wb-tree-icon > svg, .wb-tree-row:not(.wb-tree-row--dir)[data-path$=".tsv" i] .wb-tree-icon > svg, .wb-tree-row:not(.wb-tree-row--dir)[data-path$=".xlsx" i] .wb-tree-icon > svg, .wb-tree-row:not(.wb-tree-row--dir)[data-path$=".xls" i] .wb-tree-icon > svg, .wb-tree-row:not(.wb-tree-row--dir)[data-path$=".docx" i] .wb-tree-icon > svg, .wb-tree-row:not(.wb-tree-row--dir)[data-path$=".doc" i] .wb-tree-icon > svg, .wb-tree-row:not(.wb-tree-row--dir)[data-path$=".rtf" i] .wb-tree-icon > svg, .wb-tree-row:not(.wb-tree-row--dir)[data-path$=".txt" i] .wb-tree-icon > svg, .wb-tree-row:not(.wb-tree-row--dir)[data-path$=".text" i] .wb-tree-icon > svg, .wb-tree-row:not(.wb-tree-row--dir)[data-path$=".log" i] .wb-tree-icon > svg, .wb-tree-row:not(.wb-tree-row--dir)[data-path$=".pptx" i] .wb-tree-icon > svg, .wb-tree-row:not(.wb-tree-row--dir)[data-path$=".ppt" i] .wb-tree-icon > svg, .wb-tree-row:not(.wb-tree-row--dir)[data-path$=".key" i] .wb-tree-icon > svg, .wb-tree-row:not(.wb-tree-row--dir)[data-path$=".pdf" i] .wb-tree-icon > svg, .wb-tree-row:not(.wb-tree-row--dir)[data-path$=".png" i] .wb-tree-icon > svg, .wb-tree-row:not(.wb-tree-row--dir)[data-path$=".jpg" i] .wb-tree-icon > svg, .wb-tree-row:not(.wb-tree-row--dir)[data-path$=".jpeg" i] .wb-tree-icon > svg, .wb-tree-row:not(.wb-tree-row--dir)[data-path$=".gif" i] .wb-tree-icon > svg, .wb-tree-row:not(.wb-tree-row--dir)[data-path$=".webp" i] .wb-tree-icon > svg, .wb-tree-row:not(.wb-tree-row--dir)[data-path$=".bmp" i] .wb-tree-icon > svg, .wb-tree-row:not(.wb-tree-row--dir)[data-path$=".ico" i] .wb-tree-icon > svg, .wb-tree-row:not(.wb-tree-row--dir)[data-path$=".svg" i] .wb-tree-icon > svg, .wb-tree-row:not(.wb-tree-row--dir)[data-path$=".zip" i] .wb-tree-icon > svg, .wb-tree-row:not(.wb-tree-row--dir)[data-path$=".tar" i] .wb-tree-icon > svg, .wb-tree-row:not(.wb-tree-row--dir)[data-path$=".gz" i] .wb-tree-icon > svg, .wb-tree-row:not(.wb-tree-row--dir)[data-path$=".rar" i] .wb-tree-icon > svg, .wb-tree-row:not(.wb-tree-row--dir)[data-path$=".7z" i] .wb-tree-icon > svg, .wb-tree-row:not(.wb-tree-row--dir)[data-path$=".mp3" i] .wb-tree-icon > svg, .wb-tree-row:not(.wb-tree-row--dir)[data-path$=".wav" i] .wb-tree-icon > svg, .wb-tree-row:not(.wb-tree-row--dir)[data-path$=".flac" i] .wb-tree-icon > svg, .wb-tree-row:not(.wb-tree-row--dir)[data-path$=".m4a" i] .wb-tree-icon > svg, .wb-tree-row:not(.wb-tree-row--dir)[data-path$=".ogg" i] .wb-tree-icon > svg, .wb-tree-row:not(.wb-tree-row--dir)[data-path$=".mp4" i] .wb-tree-icon > svg, .wb-tree-row:not(.wb-tree-row--dir)[data-path$=".mov" i] .wb-tree-icon > svg, .wb-tree-row:not(.wb-tree-row--dir)[data-path$=".mkv" i] .wb-tree-icon > svg, .wb-tree-row:not(.wb-tree-row--dir)[data-path$=".avi" i] .wb-tree-icon > svg, .wb-tree-row:not(.wb-tree-row--dir)[data-path$=".webm" i] .wb-tree-icon > svg, .wb-tree-row:not(.wb-tree-row--dir)[data-path$=".canvas" i] .wb-tree-icon > svg, .wb-tree-row:not(.wb-tree-row--dir)[data-path$=".base" i] .wb-tree-icon > svg , .wb-tree-row:not(.wb-tree-row--dir)[data-path$="/README.md" i] .wb-tree-icon > svg { display: none; }
+.wb-tree-row:not(.wb-tree-row--dir)[data-path$=".md" i] .wb-tree-icon::before, .wb-tree-row:not(.wb-tree-row--dir)[data-path$=".markdown" i] .wb-tree-icon::before, .wb-tree-row:not(.wb-tree-row--dir)[data-path$=".html" i] .wb-tree-icon::before, .wb-tree-row:not(.wb-tree-row--dir)[data-path$=".htm" i] .wb-tree-icon::before, .wb-tree-row:not(.wb-tree-row--dir)[data-path$=".css" i] .wb-tree-icon::before, .wb-tree-row:not(.wb-tree-row--dir)[data-path$=".js" i] .wb-tree-icon::before, .wb-tree-row:not(.wb-tree-row--dir)[data-path$=".mjs" i] .wb-tree-icon::before, .wb-tree-row:not(.wb-tree-row--dir)[data-path$=".cjs" i] .wb-tree-icon::before, .wb-tree-row:not(.wb-tree-row--dir)[data-path$=".jsx" i] .wb-tree-icon::before, .wb-tree-row:not(.wb-tree-row--dir)[data-path$=".ts" i] .wb-tree-icon::before, .wb-tree-row:not(.wb-tree-row--dir)[data-path$=".tsx" i] .wb-tree-icon::before, .wb-tree-row:not(.wb-tree-row--dir)[data-path$=".py" i] .wb-tree-icon::before, .wb-tree-row:not(.wb-tree-row--dir)[data-path$=".java" i] .wb-tree-icon::before, .wb-tree-row:not(.wb-tree-row--dir)[data-path$=".go" i] .wb-tree-icon::before, .wb-tree-row:not(.wb-tree-row--dir)[data-path$=".rs" i] .wb-tree-icon::before, .wb-tree-row:not(.wb-tree-row--dir)[data-path$=".c" i] .wb-tree-icon::before, .wb-tree-row:not(.wb-tree-row--dir)[data-path$=".h" i] .wb-tree-icon::before, .wb-tree-row:not(.wb-tree-row--dir)[data-path$=".cpp" i] .wb-tree-icon::before, .wb-tree-row:not(.wb-tree-row--dir)[data-path$=".sh" i] .wb-tree-icon::before, .wb-tree-row:not(.wb-tree-row--dir)[data-path$=".zsh" i] .wb-tree-icon::before, .wb-tree-row:not(.wb-tree-row--dir)[data-path$=".sql" i] .wb-tree-icon::before, .wb-tree-row:not(.wb-tree-row--dir)[data-path$=".json" i] .wb-tree-icon::before, .wb-tree-row:not(.wb-tree-row--dir)[data-path$=".yaml" i] .wb-tree-icon::before, .wb-tree-row:not(.wb-tree-row--dir)[data-path$=".yml" i] .wb-tree-icon::before, .wb-tree-row:not(.wb-tree-row--dir)[data-path$=".toml" i] .wb-tree-icon::before, .wb-tree-row:not(.wb-tree-row--dir)[data-path$=".ini" i] .wb-tree-icon::before, .wb-tree-row:not(.wb-tree-row--dir)[data-path$=".xml" i] .wb-tree-icon::before, .wb-tree-row:not(.wb-tree-row--dir)[data-path$=".csv" i] .wb-tree-icon::before, .wb-tree-row:not(.wb-tree-row--dir)[data-path$=".tsv" i] .wb-tree-icon::before, .wb-tree-row:not(.wb-tree-row--dir)[data-path$=".xlsx" i] .wb-tree-icon::before, .wb-tree-row:not(.wb-tree-row--dir)[data-path$=".xls" i] .wb-tree-icon::before, .wb-tree-row:not(.wb-tree-row--dir)[data-path$=".docx" i] .wb-tree-icon::before, .wb-tree-row:not(.wb-tree-row--dir)[data-path$=".doc" i] .wb-tree-icon::before, .wb-tree-row:not(.wb-tree-row--dir)[data-path$=".rtf" i] .wb-tree-icon::before, .wb-tree-row:not(.wb-tree-row--dir)[data-path$=".txt" i] .wb-tree-icon::before, .wb-tree-row:not(.wb-tree-row--dir)[data-path$=".text" i] .wb-tree-icon::before, .wb-tree-row:not(.wb-tree-row--dir)[data-path$=".log" i] .wb-tree-icon::before, .wb-tree-row:not(.wb-tree-row--dir)[data-path$=".pptx" i] .wb-tree-icon::before, .wb-tree-row:not(.wb-tree-row--dir)[data-path$=".ppt" i] .wb-tree-icon::before, .wb-tree-row:not(.wb-tree-row--dir)[data-path$=".key" i] .wb-tree-icon::before, .wb-tree-row:not(.wb-tree-row--dir)[data-path$=".pdf" i] .wb-tree-icon::before, .wb-tree-row:not(.wb-tree-row--dir)[data-path$=".png" i] .wb-tree-icon::before, .wb-tree-row:not(.wb-tree-row--dir)[data-path$=".jpg" i] .wb-tree-icon::before, .wb-tree-row:not(.wb-tree-row--dir)[data-path$=".jpeg" i] .wb-tree-icon::before, .wb-tree-row:not(.wb-tree-row--dir)[data-path$=".gif" i] .wb-tree-icon::before, .wb-tree-row:not(.wb-tree-row--dir)[data-path$=".webp" i] .wb-tree-icon::before, .wb-tree-row:not(.wb-tree-row--dir)[data-path$=".bmp" i] .wb-tree-icon::before, .wb-tree-row:not(.wb-tree-row--dir)[data-path$=".ico" i] .wb-tree-icon::before, .wb-tree-row:not(.wb-tree-row--dir)[data-path$=".svg" i] .wb-tree-icon::before, .wb-tree-row:not(.wb-tree-row--dir)[data-path$=".zip" i] .wb-tree-icon::before, .wb-tree-row:not(.wb-tree-row--dir)[data-path$=".tar" i] .wb-tree-icon::before, .wb-tree-row:not(.wb-tree-row--dir)[data-path$=".gz" i] .wb-tree-icon::before, .wb-tree-row:not(.wb-tree-row--dir)[data-path$=".rar" i] .wb-tree-icon::before, .wb-tree-row:not(.wb-tree-row--dir)[data-path$=".7z" i] .wb-tree-icon::before, .wb-tree-row:not(.wb-tree-row--dir)[data-path$=".mp3" i] .wb-tree-icon::before, .wb-tree-row:not(.wb-tree-row--dir)[data-path$=".wav" i] .wb-tree-icon::before, .wb-tree-row:not(.wb-tree-row--dir)[data-path$=".flac" i] .wb-tree-icon::before, .wb-tree-row:not(.wb-tree-row--dir)[data-path$=".m4a" i] .wb-tree-icon::before, .wb-tree-row:not(.wb-tree-row--dir)[data-path$=".ogg" i] .wb-tree-icon::before, .wb-tree-row:not(.wb-tree-row--dir)[data-path$=".mp4" i] .wb-tree-icon::before, .wb-tree-row:not(.wb-tree-row--dir)[data-path$=".mov" i] .wb-tree-icon::before, .wb-tree-row:not(.wb-tree-row--dir)[data-path$=".mkv" i] .wb-tree-icon::before, .wb-tree-row:not(.wb-tree-row--dir)[data-path$=".avi" i] .wb-tree-icon::before, .wb-tree-row:not(.wb-tree-row--dir)[data-path$=".webm" i] .wb-tree-icon::before, .wb-tree-row:not(.wb-tree-row--dir)[data-path$=".canvas" i] .wb-tree-icon::before, .wb-tree-row:not(.wb-tree-row--dir)[data-path$=".base" i] .wb-tree-icon::before , .wb-tree-row:not(.wb-tree-row--dir)[data-path$="/README.md" i] .wb-tree-icon::before { content: ""; display: block; width: 17px; height: 17px; background: currentColor; }
+.wb-tree-row:not(.wb-tree-row--dir)[data-path$=".md" i] .wb-tree-icon, .wb-tree-row:not(.wb-tree-row--dir)[data-path$=".markdown" i] .wb-tree-icon { color: #3b82f6; }
+.wb-tree-row:not(.wb-tree-row--dir)[data-path$=".md" i] .wb-tree-icon::before, .wb-tree-row:not(.wb-tree-row--dir)[data-path$=".markdown" i] .wb-tree-icon::before { -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill=%22currentColor%22 d=%22M20.56 18H3.44C2.65 18 2 17.37 2 16.59V7.41C2 6.63 2.65 6 3.44 6h17.12c.79 0 1.44.63 1.44 1.41v9.18c0 .78-.65 1.41-1.44 1.41M6.81 15.19v-3.66l1.92 2.35l1.92-2.35v3.66h1.93V8.81h-1.93l-1.92 2.35l-1.92-2.35H4.89v6.38zM19.69 12h-1.92V8.81h-1.92V12h-1.93l2.89 3.28z%22/%3E%3C/svg%3E") center / contain no-repeat; mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill=%22currentColor%22 d=%22M20.56 18H3.44C2.65 18 2 17.37 2 16.59V7.41C2 6.63 2.65 6 3.44 6h17.12c.79 0 1.44.63 1.44 1.41v9.18c0 .78-.65 1.41-1.44 1.41M6.81 15.19v-3.66l1.92 2.35l1.92-2.35v3.66h1.93V8.81h-1.93l-1.92 2.35l-1.92-2.35H4.89v6.38zM19.69 12h-1.92V8.81h-1.92V12h-1.93l2.89 3.28z%22/%3E%3C/svg%3E") center / contain no-repeat; }
+.wb-tree-row:not(.wb-tree-row--dir)[data-path$=".html" i] .wb-tree-icon, .wb-tree-row:not(.wb-tree-row--dir)[data-path$=".htm" i] .wb-tree-icon { color: #e34f26; }
+.wb-tree-row:not(.wb-tree-row--dir)[data-path$=".html" i] .wb-tree-icon::before, .wb-tree-row:not(.wb-tree-row--dir)[data-path$=".htm" i] .wb-tree-icon::before { -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill=%22currentColor%22 d=%22m12 17.56l4.07-1.13l.55-6.1H9.38L9.2 8.3h7.6l.2-1.99H7l.56 6.01h6.89l-.23 2.58l-2.22.6l-2.22-.6l-.14-1.66h-2l.29 3.19zM4.07 3h15.86L18.5 19.2L12 21l-6.5-1.8z%22/%3E%3C/svg%3E") center / contain no-repeat; mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill=%22currentColor%22 d=%22m12 17.56l4.07-1.13l.55-6.1H9.38L9.2 8.3h7.6l.2-1.99H7l.56 6.01h6.89l-.23 2.58l-2.22.6l-2.22-.6l-.14-1.66h-2l.29 3.19zM4.07 3h15.86L18.5 19.2L12 21l-6.5-1.8z%22/%3E%3C/svg%3E") center / contain no-repeat; }
+.wb-tree-row:not(.wb-tree-row--dir)[data-path$=".css" i] .wb-tree-icon { color: #2f7ad8; }
+.wb-tree-row:not(.wb-tree-row--dir)[data-path$=".css" i] .wb-tree-icon::before { -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill=%22currentColor%22 d=%22m5 3l-.65 3.34h13.59L17.5 8.5H3.92l-.66 3.33h13.59l-.76 3.81l-5.48 1.81l-4.75-1.81l.33-1.64H2.85l-.79 4l7.85 3l9.05-3l1.2-6.03l.24-1.21L21.94 3z%22/%3E%3C/svg%3E") center / contain no-repeat; mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill=%22currentColor%22 d=%22m5 3l-.65 3.34h13.59L17.5 8.5H3.92l-.66 3.33h13.59l-.76 3.81l-5.48 1.81l-4.75-1.81l.33-1.64H2.85l-.79 4l7.85 3l9.05-3l1.2-6.03l.24-1.21L21.94 3z%22/%3E%3C/svg%3E") center / contain no-repeat; }
+.wb-tree-row:not(.wb-tree-row--dir)[data-path$=".js" i] .wb-tree-icon, .wb-tree-row:not(.wb-tree-row--dir)[data-path$=".mjs" i] .wb-tree-icon, .wb-tree-row:not(.wb-tree-row--dir)[data-path$=".cjs" i] .wb-tree-icon, .wb-tree-row:not(.wb-tree-row--dir)[data-path$=".jsx" i] .wb-tree-icon { color: #d4a017; }
+.wb-tree-row:not(.wb-tree-row--dir)[data-path$=".js" i] .wb-tree-icon::before, .wb-tree-row:not(.wb-tree-row--dir)[data-path$=".mjs" i] .wb-tree-icon::before, .wb-tree-row:not(.wb-tree-row--dir)[data-path$=".cjs" i] .wb-tree-icon::before, .wb-tree-row:not(.wb-tree-row--dir)[data-path$=".jsx" i] .wb-tree-icon::before { -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill=%22currentColor%22 d=%22M3 3h18v18H3zm4.73 15.04c.4.85 1.19 1.55 2.54 1.55c1.5 0 2.53-.8 2.53-2.55v-5.78h-1.7V17c0 .86-.35 1.08-.9 1.08c-.58 0-.82-.4-1.09-.87zm5.98-.18c.5.98 1.51 1.73 3.09 1.73c1.6 0 2.8-.83 2.8-2.36c0-1.41-.81-2.04-2.25-2.66l-.42-.18c-.73-.31-1.04-.52-1.04-1.02c0-.41.31-.73.81-.73c.48 0 .8.21 1.09.73l1.31-.87c-.55-.96-1.33-1.33-2.4-1.33c-1.51 0-2.48.96-2.48 2.23c0 1.38.81 2.03 2.03 2.55l.42.18c.78.34 1.24.55 1.24 1.13c0 .48-.45.83-1.15.83c-.83 0-1.31-.43-1.67-1.03z%22/%3E%3C/svg%3E") center / contain no-repeat; mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill=%22currentColor%22 d=%22M3 3h18v18H3zm4.73 15.04c.4.85 1.19 1.55 2.54 1.55c1.5 0 2.53-.8 2.53-2.55v-5.78h-1.7V17c0 .86-.35 1.08-.9 1.08c-.58 0-.82-.4-1.09-.87zm5.98-.18c.5.98 1.51 1.73 3.09 1.73c1.6 0 2.8-.83 2.8-2.36c0-1.41-.81-2.04-2.25-2.66l-.42-.18c-.73-.31-1.04-.52-1.04-1.02c0-.41.31-.73.81-.73c.48 0 .8.21 1.09.73l1.31-.87c-.55-.96-1.33-1.33-2.4-1.33c-1.51 0-2.48.96-2.48 2.23c0 1.38.81 2.03 2.03 2.55l.42.18c.78.34 1.24.55 1.24 1.13c0 .48-.45.83-1.15.83c-.83 0-1.31-.43-1.67-1.03z%22/%3E%3C/svg%3E") center / contain no-repeat; }
+.wb-tree-row:not(.wb-tree-row--dir)[data-path$=".ts" i] .wb-tree-icon, .wb-tree-row:not(.wb-tree-row--dir)[data-path$=".tsx" i] .wb-tree-icon { color: #3178c6; }
+.wb-tree-row:not(.wb-tree-row--dir)[data-path$=".ts" i] .wb-tree-icon::before, .wb-tree-row:not(.wb-tree-row--dir)[data-path$=".tsx" i] .wb-tree-icon::before { -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill=%22currentColor%22 d=%22M3 3h18v18H3zm10.71 14.86c.5.98 1.51 1.73 3.09 1.73c1.6 0 2.8-.83 2.8-2.36c0-1.41-.81-2.04-2.25-2.66l-.42-.18c-.73-.31-1.04-.52-1.04-1.02c0-.41.31-.73.81-.73c.48 0 .8.21 1.09.73l1.31-.87c-.55-.96-1.33-1.33-2.4-1.33c-1.51 0-2.48.96-2.48 2.23c0 1.38.81 2.03 2.03 2.55l.42.18c.78.34 1.24.55 1.24 1.13c0 .48-.45.83-1.15.83c-.83 0-1.31-.43-1.67-1.03zM13 11.25H8v1.5h1.5V20h1.75v-7.25H13z%22/%3E%3C/svg%3E") center / contain no-repeat; mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill=%22currentColor%22 d=%22M3 3h18v18H3zm10.71 14.86c.5.98 1.51 1.73 3.09 1.73c1.6 0 2.8-.83 2.8-2.36c0-1.41-.81-2.04-2.25-2.66l-.42-.18c-.73-.31-1.04-.52-1.04-1.02c0-.41.31-.73.81-.73c.48 0 .8.21 1.09.73l1.31-.87c-.55-.96-1.33-1.33-2.4-1.33c-1.51 0-2.48.96-2.48 2.23c0 1.38.81 2.03 2.03 2.55l.42.18c.78.34 1.24.55 1.24 1.13c0 .48-.45.83-1.15.83c-.83 0-1.31-.43-1.67-1.03zM13 11.25H8v1.5h1.5V20h1.75v-7.25H13z%22/%3E%3C/svg%3E") center / contain no-repeat; }
+.wb-tree-row:not(.wb-tree-row--dir)[data-path$=".py" i] .wb-tree-icon { color: #3776ab; }
+.wb-tree-row:not(.wb-tree-row--dir)[data-path$=".py" i] .wb-tree-icon::before { -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill=%22currentColor%22 d=%22M19.14 7.5A2.86 2.86 0 0 1 22 10.36v3.78A2.86 2.86 0 0 1 19.14 17H12c0 .39.32.96.71.96H17v1.68a2.86 2.86 0 0 1-2.86 2.86H9.86A2.86 2.86 0 0 1 7 19.64v-3.75a2.85 2.85 0 0 1 2.86-2.85h5.25a2.85 2.85 0 0 0 2.85-2.86V7.5zm-4.28 11.79c-.4 0-.72.3-.72.89s.32.71.72.71a.71.71 0 0 0 .71-.71c0-.59-.32-.89-.71-.89m-10-1.79A2.86 2.86 0 0 1 2 14.64v-3.78A2.86 2.86 0 0 1 4.86 8H12c0-.39-.32-.96-.71-.96H7V5.36A2.86 2.86 0 0 1 9.86 2.5h4.28A2.86 2.86 0 0 1 17 5.36v3.75a2.85 2.85 0 0 1-2.86 2.85H8.89a2.85 2.85 0 0 0-2.85 2.86v2.68zM9.14 5.71c.4 0 .72-.3.72-.89s-.32-.71-.72-.71c-.39 0-.71.12-.71.71s.32.89.71.89%22/%3E%3C/svg%3E") center / contain no-repeat; mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill=%22currentColor%22 d=%22M19.14 7.5A2.86 2.86 0 0 1 22 10.36v3.78A2.86 2.86 0 0 1 19.14 17H12c0 .39.32.96.71.96H17v1.68a2.86 2.86 0 0 1-2.86 2.86H9.86A2.86 2.86 0 0 1 7 19.64v-3.75a2.85 2.85 0 0 1 2.86-2.85h5.25a2.85 2.85 0 0 0 2.85-2.86V7.5zm-4.28 11.79c-.4 0-.72.3-.72.89s.32.71.72.71a.71.71 0 0 0 .71-.71c0-.59-.32-.89-.71-.89m-10-1.79A2.86 2.86 0 0 1 2 14.64v-3.78A2.86 2.86 0 0 1 4.86 8H12c0-.39-.32-.96-.71-.96H7V5.36A2.86 2.86 0 0 1 9.86 2.5h4.28A2.86 2.86 0 0 1 17 5.36v3.75a2.85 2.85 0 0 1-2.86 2.85H8.89a2.85 2.85 0 0 0-2.85 2.86v2.68zM9.14 5.71c.4 0 .72-.3.72-.89s-.32-.71-.72-.71c-.39 0-.71.12-.71.71s.32.89.71.89%22/%3E%3C/svg%3E") center / contain no-repeat; }
+.wb-tree-row:not(.wb-tree-row--dir)[data-path$=".java" i] .wb-tree-icon { color: #d9534f; }
+.wb-tree-row:not(.wb-tree-row--dir)[data-path$=".java" i] .wb-tree-icon::before { -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill=%22currentColor%22 d=%22M16.5 6.08s-6.84 1.71-3.56 5.48c.97 1.11-.25 2.11-.25 2.11s2.45-1.25 1.31-2.85c-1.06-1.47-1.86-2.2 2.5-4.74m-4.47 1.2C16.08 4.08 14 2 14 2c.84 3.3-2.96 4.3-4.33 6.36c-.94 1.4.46 2.91 2.33 4.64c-.71-1.7-3.22-3.16.03-5.72M9.37 17.47c-3.08.86 1.88 2.63 5.79.96c-.38-.15-.75-.33-1.1-.54c-1.36.31-2.76.37-4.14.18c-1.31-.16-.55-.6-.55-.6m5.32-1.68c-1.75.38-3.56.47-5.34.26c-1.31-.13-.45-.77-.45-.77c-3.4 1.13 1.88 2.4 6.6 1.02c-.29-.11-.57-.3-.81-.51m3.42 3.3s.57.47-.61.83c-2.28.68-9.43.89-11.41.03c-.71-.31.63-.74 1.05-.83c.23-.06.46-.08.69-.08c-.79-.54-5.13 1.1-2.19 1.56c7.97 1.3 14.54-.6 12.47-1.51m-2.74-4.86c.29-.19.6-.35.92-.49c0 0-1.51.26-3.02.4c-1.6.16-3.21.18-4.81.06c-2.35-.31 1.29-1.2 1.29-1.2c-1.1 0-2.18.26-3.16.75c-2.05 1 5.1 1.45 8.78.48m.9 2.42c-.02.04-.04.07-.08.1c5.01-1.31 3.17-4.64.77-3.81c-.13.06-.24.14-.31.25c.14-.05.28-.09.43-.12c1.2-.24 2.92 1.63-.81 3.58m.13 4.61c-3.01.52-6.09.56-9.12.14c0 0 .46.38 2.81.53c3.6.23 9.13-.13 9.26-1.83c.03.01-.23.65-2.95 1.16%22/%3E%3C/svg%3E") center / contain no-repeat; mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill=%22currentColor%22 d=%22M16.5 6.08s-6.84 1.71-3.56 5.48c.97 1.11-.25 2.11-.25 2.11s2.45-1.25 1.31-2.85c-1.06-1.47-1.86-2.2 2.5-4.74m-4.47 1.2C16.08 4.08 14 2 14 2c.84 3.3-2.96 4.3-4.33 6.36c-.94 1.4.46 2.91 2.33 4.64c-.71-1.7-3.22-3.16.03-5.72M9.37 17.47c-3.08.86 1.88 2.63 5.79.96c-.38-.15-.75-.33-1.1-.54c-1.36.31-2.76.37-4.14.18c-1.31-.16-.55-.6-.55-.6m5.32-1.68c-1.75.38-3.56.47-5.34.26c-1.31-.13-.45-.77-.45-.77c-3.4 1.13 1.88 2.4 6.6 1.02c-.29-.11-.57-.3-.81-.51m3.42 3.3s.57.47-.61.83c-2.28.68-9.43.89-11.41.03c-.71-.31.63-.74 1.05-.83c.23-.06.46-.08.69-.08c-.79-.54-5.13 1.1-2.19 1.56c7.97 1.3 14.54-.6 12.47-1.51m-2.74-4.86c.29-.19.6-.35.92-.49c0 0-1.51.26-3.02.4c-1.6.16-3.21.18-4.81.06c-2.35-.31 1.29-1.2 1.29-1.2c-1.1 0-2.18.26-3.16.75c-2.05 1 5.1 1.45 8.78.48m.9 2.42c-.02.04-.04.07-.08.1c5.01-1.31 3.17-4.64.77-3.81c-.13.06-.24.14-.31.25c.14-.05.28-.09.43-.12c1.2-.24 2.92 1.63-.81 3.58m.13 4.61c-3.01.52-6.09.56-9.12.14c0 0 .46.38 2.81.53c3.6.23 9.13-.13 9.26-1.83c.03.01-.23.65-2.95 1.16%22/%3E%3C/svg%3E") center / contain no-repeat; }
+.wb-tree-row:not(.wb-tree-row--dir)[data-path$=".go" i] .wb-tree-icon { color: #00acd7; }
+.wb-tree-row:not(.wb-tree-row--dir)[data-path$=".go" i] .wb-tree-icon::before { -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill=%22currentColor%22 d=%22m2.64 10.33l-.02-.06l.22-.27l.12-.08H6.8l.03.08l-.18.26l-.11.06zm-1.61.98L1 11.26l.22-.29l.12-.06h4.9l.05.09l-.08.24l-.1.07zm2.6.99l-.04-.06l.16-.28l.1-.06H6l.07.07l-.02.25l-.08.08zm11.15-2.16l-1.78.47c-.19.04-.2.05-.34-.11c-.16-.18-.27-.29-.5-.4c-.66-.34-1.33-.24-1.94.15c-.72.48-1.11 1.17-1.1 2.05c.01.86.6 1.57 1.45 1.7c.73.09 1.34-.17 1.83-.72l.29-.39h-2.07c-.22 0-.27-.14-.2-.32l.55-1.18c.03-.06.11-.17.27-.17h3.44c.15-.5.41-.96.75-1.41c.78-1.03 1.73-1.57 3-1.81c1.07-.18 2.13-.07 3.07.57c.84.58 1.37 1.36 1.5 2.39c.19 1.45-.24 2.63-1.24 3.65c-.71.72-1.58 1.17-2.57 1.39l-.86.08c-.98-.02-1.87-.3-2.62-.95c-.52-.45-.88-.99-1.06-1.63c-.15.24-.27.47-.44.7c-.77 1.02-1.78 1.65-3.06 1.8c-1.05.16-2.03-.05-2.89-.69c-.79-.6-1.26-1.4-1.36-2.39c-.14-1.17.2-2.22.91-3.14c.76-1 1.77-1.63 3.01-1.86c1-.18 1.97-.06 2.84.52c.57.38.97.9 1.24 1.52q.06.135-.12.18m6.11 1.6l-.03-.36c-.19-1.06-1.17-1.66-2.19-1.43c-1.01.22-1.67.85-1.88 1.86c-.19.84.21 1.69.98 2.03c.59.26 1.19.22 1.76-.06c.84-.43 1.31-1.12 1.36-2.04%22/%3E%3C/svg%3E") center / contain no-repeat; mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill=%22currentColor%22 d=%22m2.64 10.33l-.02-.06l.22-.27l.12-.08H6.8l.03.08l-.18.26l-.11.06zm-1.61.98L1 11.26l.22-.29l.12-.06h4.9l.05.09l-.08.24l-.1.07zm2.6.99l-.04-.06l.16-.28l.1-.06H6l.07.07l-.02.25l-.08.08zm11.15-2.16l-1.78.47c-.19.04-.2.05-.34-.11c-.16-.18-.27-.29-.5-.4c-.66-.34-1.33-.24-1.94.15c-.72.48-1.11 1.17-1.1 2.05c.01.86.6 1.57 1.45 1.7c.73.09 1.34-.17 1.83-.72l.29-.39h-2.07c-.22 0-.27-.14-.2-.32l.55-1.18c.03-.06.11-.17.27-.17h3.44c.15-.5.41-.96.75-1.41c.78-1.03 1.73-1.57 3-1.81c1.07-.18 2.13-.07 3.07.57c.84.58 1.37 1.36 1.5 2.39c.19 1.45-.24 2.63-1.24 3.65c-.71.72-1.58 1.17-2.57 1.39l-.86.08c-.98-.02-1.87-.3-2.62-.95c-.52-.45-.88-.99-1.06-1.63c-.15.24-.27.47-.44.7c-.77 1.02-1.78 1.65-3.06 1.8c-1.05.16-2.03-.05-2.89-.69c-.79-.6-1.26-1.4-1.36-2.39c-.14-1.17.2-2.22.91-3.14c.76-1 1.77-1.63 3.01-1.86c1-.18 1.97-.06 2.84.52c.57.38.97.9 1.24 1.52q.06.135-.12.18m6.11 1.6l-.03-.36c-.19-1.06-1.17-1.66-2.19-1.43c-1.01.22-1.67.85-1.88 1.86c-.19.84.21 1.69.98 2.03c.59.26 1.19.22 1.76-.06c.84-.43 1.31-1.12 1.36-2.04%22/%3E%3C/svg%3E") center / contain no-repeat; }
+.wb-tree-row:not(.wb-tree-row--dir)[data-path$=".rs" i] .wb-tree-icon { color: #b7410e; }
+.wb-tree-row:not(.wb-tree-row--dir)[data-path$=".rs" i] .wb-tree-icon::before { -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill=%22currentColor%22 d=%22m21.9 11.7l-.9-.5V11l.7-.7c.1-.1.1-.3 0-.4l-.1-.1l-.9-.3c0-.1 0-.2-.1-.2l.6-.8c.1-.1.1-.3-.1-.4c0 0-.1 0-.1-.1l-1-.2c0-.1-.1-.1-.1-.2l.4-.9v-.3c-.1-.1-.2-.1-.3-.1h-1s0-.1-.1-.1l.2-1c0-.2-.1-.3-.2-.3h-.1l-1 .2c0-.1-.1-.1-.2-.2v-1q0-.3-.3-.3h-.1l-.9.4h-.1L16 3c0-.2-.2-.3-.3-.2h-.1l-.8.6c-.1 0-.2 0-.2-.1l-.3-.9c-.1-.1-.2-.2-.4-.2c0 0-.1 0-.1.1L13 3h-.2l-.5-.8c-.1-.2-.3-.2-.5-.2l-.1.1l-.5.9H11l-.7-.7c-.1-.1-.3-.1-.4 0l-.1.1l-.3.9c-.1 0-.2 0-.2.1l-.8-.6c-.2-.1-.4-.1-.5.1V3l-.2 1s-.1 0-.2.1l-.9-.4c-.1-.1-.3 0-.4.1v1.1c0 .1-.1.1-.1.2l-1-.2c-.2-.1-.3 0-.3.2v.1l.2 1c-.1 0-.1.1-.2.1h-1q-.3 0-.3.3v.1l.4.9v.2L3 8c-.2 0-.3.2-.3.3v.1l.6.8c0 .1 0 .2-.1.2l-.8.4c-.1.1-.2.2-.2.4c0 0 0 .1.1.1l.7.7v.2l-.8.5c-.2.1-.2.3-.2.4l.1.1l.9.6v.2l-.7.7c-.1.1-.1.3 0 .4l.1.1l.9.3c0 .1 0 .2.1.2l-.6.8c-.1.1-.1.3.1.4c0 0 .1 0 .1.1l1 .2c0 .1.1.1.1.2l-.4.9c-.1.1 0 .3.1.4h1.1c.1 0 .1.1.2.1l-.2 1c0 .2.1.3.2.3h.1l1-.2c0 .1.1.1.2.2v1q0 .3.3.3h.1l.9-.4h.1l.2 1c0 .2.2.3.3.2h.1l.8-.6c.1 0 .2 0 .2.1l.3.9c.1.1.2.2.4.2c0 0 .1 0 .1-.1l.8-.7h.2l.5.8c.1.1.3.2.4.1l.1-.1l.5-.8h.2l.7.7c.1.1.3.1.4 0l.1-.1l.3-.9c.1 0 .2 0 .2-.1l.8.6c.1.1.3.1.4-.1c0 0 0-.1.1-.1l.2-1c.1 0 .1-.1.2-.1l.9.4c.1.1.3 0 .4-.1v-1.1l.2-.2l1 .2c.2 0 .3-.1.3-.2v-.1l-.2-1l.2-.2h1q.3 0 .3-.3v-.1l-.4-.9c0-.1.1-.1.1-.2l1-.2c.2 0 .3-.2.2-.3v-.1l-.6-.8l.1-.2l.9-.3c.1-.1.2-.2.2-.4c0 0 0-.1-.1-.1L21 13v-.2l.8-.5c.2-.1.2-.3.1-.6q0 .15 0 0m-5.7 7c-.3-.1-.5-.4-.5-.7c.1-.3.4-.5.7-.5c.3.1.5.4.5.7c0 .4-.3.6-.7.5m-.2-1.9c-.3-.1-.6.1-.6.4l-.4 1.4q-1.35.6-3 .6c-1.1 0-2.1-.2-3.1-.7l-.3-1.4c-.1-.3-.3-.5-.6-.4l-1.2.3c-.2-.2-.4-.5-.6-.7h6c.1 0 .1 0 .1-.1v-2.1c0-.1 0-.1-.1-.1h-1.7v-1.3h1.9c.2 0 .9 0 1.2 1c.1.3.2 1.3.4 1.6c.1.3.6 1 1.1 1h3.1c-.2.3-.4.5-.7.8zm-8.3 1.9c-.3.1-.6-.1-.7-.5c-.1-.3.1-.6.5-.7s.6.1.7.5c0 .3-.2.6-.5.7M5.4 9.5c.1.3 0 .7-.3.8s-.7 0-.8-.3s0-.7.3-.8c.4-.1.7 0 .8.3m-.7 1.6l1.3-.5c.3-.1.4-.4.3-.7L6 9.3h1V14H5c-.3-1-.4-1.9-.3-2.9m5.6-.4V9.3h2.5c.1 0 .9.1.9.7c0 .5-.6.7-1.1.7zm9 1.2v.5h-.8c-.1 0-.1 0-.1.1v.3c0 .8-.5 1-.9 1s-.8-.2-.9-.4c-.2-1.3-.6-1.5-1.2-2c.7-.5 1.5-1.2 1.5-2.1c0-1-.7-1.6-1.1-1.9c-.7-.4-1.4-.5-1.6-.5H6.6c1.1-1.2 2.5-2 4.1-2.3l.9 1c.2.2.5.2.8 0l1-1c2.1.4 3.9 1.7 5 3.6l-.7 1.6c-.1.3 0 .6.3.7l1.3.6zm-7.7-8c.2-.2.6-.2.8 0s.2.6 0 .8q-.45.45-.9 0c-.2-.2-.1-.5.1-.8m6.9 5.6c.1-.3.5-.4.8-.3s.4.5.3.8s-.5.4-.8.3s-.4-.5-.3-.8%22/%3E%3C/svg%3E") center / contain no-repeat; mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill=%22currentColor%22 d=%22m21.9 11.7l-.9-.5V11l.7-.7c.1-.1.1-.3 0-.4l-.1-.1l-.9-.3c0-.1 0-.2-.1-.2l.6-.8c.1-.1.1-.3-.1-.4c0 0-.1 0-.1-.1l-1-.2c0-.1-.1-.1-.1-.2l.4-.9v-.3c-.1-.1-.2-.1-.3-.1h-1s0-.1-.1-.1l.2-1c0-.2-.1-.3-.2-.3h-.1l-1 .2c0-.1-.1-.1-.2-.2v-1q0-.3-.3-.3h-.1l-.9.4h-.1L16 3c0-.2-.2-.3-.3-.2h-.1l-.8.6c-.1 0-.2 0-.2-.1l-.3-.9c-.1-.1-.2-.2-.4-.2c0 0-.1 0-.1.1L13 3h-.2l-.5-.8c-.1-.2-.3-.2-.5-.2l-.1.1l-.5.9H11l-.7-.7c-.1-.1-.3-.1-.4 0l-.1.1l-.3.9c-.1 0-.2 0-.2.1l-.8-.6c-.2-.1-.4-.1-.5.1V3l-.2 1s-.1 0-.2.1l-.9-.4c-.1-.1-.3 0-.4.1v1.1c0 .1-.1.1-.1.2l-1-.2c-.2-.1-.3 0-.3.2v.1l.2 1c-.1 0-.1.1-.2.1h-1q-.3 0-.3.3v.1l.4.9v.2L3 8c-.2 0-.3.2-.3.3v.1l.6.8c0 .1 0 .2-.1.2l-.8.4c-.1.1-.2.2-.2.4c0 0 0 .1.1.1l.7.7v.2l-.8.5c-.2.1-.2.3-.2.4l.1.1l.9.6v.2l-.7.7c-.1.1-.1.3 0 .4l.1.1l.9.3c0 .1 0 .2.1.2l-.6.8c-.1.1-.1.3.1.4c0 0 .1 0 .1.1l1 .2c0 .1.1.1.1.2l-.4.9c-.1.1 0 .3.1.4h1.1c.1 0 .1.1.2.1l-.2 1c0 .2.1.3.2.3h.1l1-.2c0 .1.1.1.2.2v1q0 .3.3.3h.1l.9-.4h.1l.2 1c0 .2.2.3.3.2h.1l.8-.6c.1 0 .2 0 .2.1l.3.9c.1.1.2.2.4.2c0 0 .1 0 .1-.1l.8-.7h.2l.5.8c.1.1.3.2.4.1l.1-.1l.5-.8h.2l.7.7c.1.1.3.1.4 0l.1-.1l.3-.9c.1 0 .2 0 .2-.1l.8.6c.1.1.3.1.4-.1c0 0 0-.1.1-.1l.2-1c.1 0 .1-.1.2-.1l.9.4c.1.1.3 0 .4-.1v-1.1l.2-.2l1 .2c.2 0 .3-.1.3-.2v-.1l-.2-1l.2-.2h1q.3 0 .3-.3v-.1l-.4-.9c0-.1.1-.1.1-.2l1-.2c.2 0 .3-.2.2-.3v-.1l-.6-.8l.1-.2l.9-.3c.1-.1.2-.2.2-.4c0 0 0-.1-.1-.1L21 13v-.2l.8-.5c.2-.1.2-.3.1-.6q0 .15 0 0m-5.7 7c-.3-.1-.5-.4-.5-.7c.1-.3.4-.5.7-.5c.3.1.5.4.5.7c0 .4-.3.6-.7.5m-.2-1.9c-.3-.1-.6.1-.6.4l-.4 1.4q-1.35.6-3 .6c-1.1 0-2.1-.2-3.1-.7l-.3-1.4c-.1-.3-.3-.5-.6-.4l-1.2.3c-.2-.2-.4-.5-.6-.7h6c.1 0 .1 0 .1-.1v-2.1c0-.1 0-.1-.1-.1h-1.7v-1.3h1.9c.2 0 .9 0 1.2 1c.1.3.2 1.3.4 1.6c.1.3.6 1 1.1 1h3.1c-.2.3-.4.5-.7.8zm-8.3 1.9c-.3.1-.6-.1-.7-.5c-.1-.3.1-.6.5-.7s.6.1.7.5c0 .3-.2.6-.5.7M5.4 9.5c.1.3 0 .7-.3.8s-.7 0-.8-.3s0-.7.3-.8c.4-.1.7 0 .8.3m-.7 1.6l1.3-.5c.3-.1.4-.4.3-.7L6 9.3h1V14H5c-.3-1-.4-1.9-.3-2.9m5.6-.4V9.3h2.5c.1 0 .9.1.9.7c0 .5-.6.7-1.1.7zm9 1.2v.5h-.8c-.1 0-.1 0-.1.1v.3c0 .8-.5 1-.9 1s-.8-.2-.9-.4c-.2-1.3-.6-1.5-1.2-2c.7-.5 1.5-1.2 1.5-2.1c0-1-.7-1.6-1.1-1.9c-.7-.4-1.4-.5-1.6-.5H6.6c1.1-1.2 2.5-2 4.1-2.3l.9 1c.2.2.5.2.8 0l1-1c2.1.4 3.9 1.7 5 3.6l-.7 1.6c-.1.3 0 .6.3.7l1.3.6zm-7.7-8c.2-.2.6-.2.8 0s.2.6 0 .8q-.45.45-.9 0c-.2-.2-.1-.5.1-.8m6.9 5.6c.1-.3.5-.4.8-.3s.4.5.3.8s-.5.4-.8.3s-.4-.5-.3-.8%22/%3E%3C/svg%3E") center / contain no-repeat; }
+.wb-tree-row:not(.wb-tree-row--dir)[data-path$=".c" i] .wb-tree-icon, .wb-tree-row:not(.wb-tree-row--dir)[data-path$=".h" i] .wb-tree-icon { color: #5c6bc0; }
+.wb-tree-row:not(.wb-tree-row--dir)[data-path$=".c" i] .wb-tree-icon::before, .wb-tree-row:not(.wb-tree-row--dir)[data-path$=".h" i] .wb-tree-icon::before { -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill=%22currentColor%22 d=%22m15.45 15.97l.42 2.44c-.26.14-.68.27-1.24.39c-.57.13-1.24.2-2.01.2c-2.21-.04-3.87-.7-4.98-1.96c-1.14-1.27-1.68-2.88-1.68-4.83C6 9.9 6.68 8.13 8 6.89C9.28 5.64 10.92 5 12.9 5c.75 0 1.4.07 1.94.19s.94.25 1.2.4l-.6 2.49l-1.04-.34c-.4-.1-.87-.15-1.4-.15c-1.15-.01-2.11.36-2.86 1.1c-.76.73-1.14 1.85-1.18 3.34c.01 1.36.37 2.42 1.08 3.2c.71.77 1.7 1.17 2.99 1.18l1.33-.12c.43-.08.79-.19 1.09-.32%22/%3E%3C/svg%3E") center / contain no-repeat; mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill=%22currentColor%22 d=%22m15.45 15.97l.42 2.44c-.26.14-.68.27-1.24.39c-.57.13-1.24.2-2.01.2c-2.21-.04-3.87-.7-4.98-1.96c-1.14-1.27-1.68-2.88-1.68-4.83C6 9.9 6.68 8.13 8 6.89C9.28 5.64 10.92 5 12.9 5c.75 0 1.4.07 1.94.19s.94.25 1.2.4l-.6 2.49l-1.04-.34c-.4-.1-.87-.15-1.4-.15c-1.15-.01-2.11.36-2.86 1.1c-.76.73-1.14 1.85-1.18 3.34c.01 1.36.37 2.42 1.08 3.2c.71.77 1.7 1.17 2.99 1.18l1.33-.12c.43-.08.79-.19 1.09-.32%22/%3E%3C/svg%3E") center / contain no-repeat; }
+.wb-tree-row:not(.wb-tree-row--dir)[data-path$=".cpp" i] .wb-tree-icon { color: #5c6bc0; }
+.wb-tree-row:not(.wb-tree-row--dir)[data-path$=".cpp" i] .wb-tree-icon::before { -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill=%22currentColor%22 d=%22m10.5 15.97l.41 2.44c-.26.14-.68.27-1.24.39c-.57.13-1.24.2-2.01.2c-2.21-.04-3.87-.7-4.98-1.96Q1 15.135 1 12.21c.05-2.31.72-4.08 2-5.32C4.32 5.64 5.96 5 7.94 5c.75 0 1.4.07 1.94.19s.94.25 1.2.4l-.58 2.49l-1.06-.34c-.4-.1-.86-.15-1.39-.15c-1.16-.01-2.12.36-2.87 1.1c-.76.73-1.15 1.85-1.18 3.34c0 1.36.37 2.42 1.08 3.2c.71.77 1.71 1.17 2.99 1.18l1.33-.12c.43-.08.79-.19 1.1-.32M11 11h2V9h2v2h2v2h-2v2h-2v-2h-2zm7 0h2V9h2v2h2v2h-2v2h-2v-2h-2z%22/%3E%3C/svg%3E") center / contain no-repeat; mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill=%22currentColor%22 d=%22m10.5 15.97l.41 2.44c-.26.14-.68.27-1.24.39c-.57.13-1.24.2-2.01.2c-2.21-.04-3.87-.7-4.98-1.96Q1 15.135 1 12.21c.05-2.31.72-4.08 2-5.32C4.32 5.64 5.96 5 7.94 5c.75 0 1.4.07 1.94.19s.94.25 1.2.4l-.58 2.49l-1.06-.34c-.4-.1-.86-.15-1.39-.15c-1.16-.01-2.12.36-2.87 1.1c-.76.73-1.15 1.85-1.18 3.34c0 1.36.37 2.42 1.08 3.2c.71.77 1.71 1.17 2.99 1.18l1.33-.12c.43-.08.79-.19 1.1-.32M11 11h2V9h2v2h2v2h-2v2h-2v-2h-2zm7 0h2V9h2v2h2v2h-2v2h-2v-2h-2z%22/%3E%3C/svg%3E") center / contain no-repeat; }
+.wb-tree-row:not(.wb-tree-row--dir)[data-path$=".sh" i] .wb-tree-icon, .wb-tree-row:not(.wb-tree-row--dir)[data-path$=".zsh" i] .wb-tree-icon { color: #4caf50; }
+.wb-tree-row:not(.wb-tree-row--dir)[data-path$=".sh" i] .wb-tree-icon::before, .wb-tree-row:not(.wb-tree-row--dir)[data-path$=".zsh" i] .wb-tree-icon::before { -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill=%22currentColor%22 d=%22M20 19V7H4v12zm0-16a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2zm-7 14v-2h5v2zm-3.42-4L5.57 9H8.4l3.3 3.3c.39.39.39 1.03 0 1.42L8.42 17H5.59z%22/%3E%3C/svg%3E") center / contain no-repeat; mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill=%22currentColor%22 d=%22M20 19V7H4v12zm0-16a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2zm-7 14v-2h5v2zm-3.42-4L5.57 9H8.4l3.3 3.3c.39.39.39 1.03 0 1.42L8.42 17H5.59z%22/%3E%3C/svg%3E") center / contain no-repeat; }
+.wb-tree-row:not(.wb-tree-row--dir)[data-path$=".sql" i] .wb-tree-icon { color: #e0a400; }
+.wb-tree-row:not(.wb-tree-row--dir)[data-path$=".sql" i] .wb-tree-icon::before { -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill=%22currentColor%22 d=%22M12 3C7.58 3 4 4.79 4 7s3.58 4 8 4s8-1.79 8-4s-3.58-4-8-4M4 9v3c0 2.21 3.58 4 8 4s8-1.79 8-4V9c0 2.21-3.58 4-8 4s-8-1.79-8-4m0 5v3c0 2.21 3.58 4 8 4s8-1.79 8-4v-3c0 2.21-3.58 4-8 4s-8-1.79-8-4%22/%3E%3C/svg%3E") center / contain no-repeat; mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill=%22currentColor%22 d=%22M12 3C7.58 3 4 4.79 4 7s3.58 4 8 4s8-1.79 8-4s-3.58-4-8-4M4 9v3c0 2.21 3.58 4 8 4s8-1.79 8-4V9c0 2.21-3.58 4-8 4s-8-1.79-8-4m0 5v3c0 2.21 3.58 4 8 4s8-1.79 8-4v-3c0 2.21-3.58 4-8 4s-8-1.79-8-4%22/%3E%3C/svg%3E") center / contain no-repeat; }
+.wb-tree-row:not(.wb-tree-row--dir)[data-path$=".json" i] .wb-tree-icon { color: #e0a400; }
+.wb-tree-row:not(.wb-tree-row--dir)[data-path$=".json" i] .wb-tree-icon::before { -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill=%22currentColor%22 d=%22M5 3h2v2H5v5a2 2 0 0 1-2 2a2 2 0 0 1 2 2v5h2v2H5c-1.07-.27-2-.9-2-2v-4a2 2 0 0 0-2-2H0v-2h1a2 2 0 0 0 2-2V5a2 2 0 0 1 2-2m14 0a2 2 0 0 1 2 2v4a2 2 0 0 0 2 2h1v2h-1a2 2 0 0 0-2 2v4a2 2 0 0 1-2 2h-2v-2h2v-5a2 2 0 0 1 2-2a2 2 0 0 1-2-2V5h-2V3zm-7 12a1 1 0 0 1 1 1a1 1 0 0 1-1 1a1 1 0 0 1-1-1a1 1 0 0 1 1-1m-4 0a1 1 0 0 1 1 1a1 1 0 0 1-1 1a1 1 0 0 1-1-1a1 1 0 0 1 1-1m8 0a1 1 0 0 1 1 1a1 1 0 0 1-1 1a1 1 0 0 1-1-1a1 1 0 0 1 1-1%22/%3E%3C/svg%3E") center / contain no-repeat; mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill=%22currentColor%22 d=%22M5 3h2v2H5v5a2 2 0 0 1-2 2a2 2 0 0 1 2 2v5h2v2H5c-1.07-.27-2-.9-2-2v-4a2 2 0 0 0-2-2H0v-2h1a2 2 0 0 0 2-2V5a2 2 0 0 1 2-2m14 0a2 2 0 0 1 2 2v4a2 2 0 0 0 2 2h1v2h-1a2 2 0 0 0-2 2v4a2 2 0 0 1-2 2h-2v-2h2v-5a2 2 0 0 1 2-2a2 2 0 0 1-2-2V5h-2V3zm-7 12a1 1 0 0 1 1 1a1 1 0 0 1-1 1a1 1 0 0 1-1-1a1 1 0 0 1 1-1m-4 0a1 1 0 0 1 1 1a1 1 0 0 1-1 1a1 1 0 0 1-1-1a1 1 0 0 1 1-1m8 0a1 1 0 0 1 1 1a1 1 0 0 1-1 1a1 1 0 0 1-1-1a1 1 0 0 1 1-1%22/%3E%3C/svg%3E") center / contain no-repeat; }
+.wb-tree-row:not(.wb-tree-row--dir)[data-path$=".yaml" i] .wb-tree-icon, .wb-tree-row:not(.wb-tree-row--dir)[data-path$=".yml" i] .wb-tree-icon, .wb-tree-row:not(.wb-tree-row--dir)[data-path$=".toml" i] .wb-tree-icon, .wb-tree-row:not(.wb-tree-row--dir)[data-path$=".ini" i] .wb-tree-icon { color: #8a6fd0; }
+.wb-tree-row:not(.wb-tree-row--dir)[data-path$=".yaml" i] .wb-tree-icon::before, .wb-tree-row:not(.wb-tree-row--dir)[data-path$=".yml" i] .wb-tree-icon::before, .wb-tree-row:not(.wb-tree-row--dir)[data-path$=".toml" i] .wb-tree-icon::before, .wb-tree-row:not(.wb-tree-row--dir)[data-path$=".ini" i] .wb-tree-icon::before { -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill=%22currentColor%22 d=%22M6 2a2 2 0 0 0-2 2v16c0 1.11.89 2 2 2h6v-2H6V4h7v5h5v3h2V8l-6-6m4 12a.26.26 0 0 0-.26.21l-.19 1.32c-.3.13-.59.29-.85.47l-1.24-.5c-.11 0-.24 0-.31.13l-1 1.73c-.06.11-.04.24.06.32l1.06.82a4.2 4.2 0 0 0 0 1l-1.06.82a.26.26 0 0 0-.06.32l1 1.73c.06.13.19.13.31.13l1.24-.5c.26.18.54.35.85.47l.19 1.32c.02.12.12.21.26.21h2c.11 0 .22-.09.24-.21l.19-1.32c.3-.13.57-.29.84-.47l1.23.5c.13 0 .26 0 .33-.13l1-1.73a.26.26 0 0 0-.06-.32l-1.07-.82c.02-.17.04-.33.04-.5s-.01-.33-.04-.5l1.06-.82a.26.26 0 0 0 .06-.32l-1-1.73c-.06-.13-.19-.13-.32-.13l-1.23.5c-.27-.18-.54-.35-.85-.47l-.19-1.32A.236.236 0 0 0 20 14m-1 3.5c.83 0 1.5.67 1.5 1.5s-.67 1.5-1.5 1.5c-.84 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5%22/%3E%3C/svg%3E") center / contain no-repeat; mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill=%22currentColor%22 d=%22M6 2a2 2 0 0 0-2 2v16c0 1.11.89 2 2 2h6v-2H6V4h7v5h5v3h2V8l-6-6m4 12a.26.26 0 0 0-.26.21l-.19 1.32c-.3.13-.59.29-.85.47l-1.24-.5c-.11 0-.24 0-.31.13l-1 1.73c-.06.11-.04.24.06.32l1.06.82a4.2 4.2 0 0 0 0 1l-1.06.82a.26.26 0 0 0-.06.32l1 1.73c.06.13.19.13.31.13l1.24-.5c.26.18.54.35.85.47l.19 1.32c.02.12.12.21.26.21h2c.11 0 .22-.09.24-.21l.19-1.32c.3-.13.57-.29.84-.47l1.23.5c.13 0 .26 0 .33-.13l1-1.73a.26.26 0 0 0-.06-.32l-1.07-.82c.02-.17.04-.33.04-.5s-.01-.33-.04-.5l1.06-.82a.26.26 0 0 0 .06-.32l-1-1.73c-.06-.13-.19-.13-.32-.13l-1.23.5c-.27-.18-.54-.35-.85-.47l-.19-1.32A.236.236 0 0 0 20 14m-1 3.5c.83 0 1.5.67 1.5 1.5s-.67 1.5-1.5 1.5c-.84 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5%22/%3E%3C/svg%3E") center / contain no-repeat; }
+.wb-tree-row:not(.wb-tree-row--dir)[data-path$=".xml" i] .wb-tree-icon { color: #e06c1f; }
+.wb-tree-row:not(.wb-tree-row--dir)[data-path$=".xml" i] .wb-tree-icon::before { -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill=%22currentColor%22 d=%22m12.89 3l1.96.4L11.11 21l-1.96-.4zm6.7 9L16 8.41V5.58L22.42 12L16 18.41v-2.83zM1.58 12L8 5.58v2.83L4.41 12L8 15.58v2.83z%22/%3E%3C/svg%3E") center / contain no-repeat; mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill=%22currentColor%22 d=%22m12.89 3l1.96.4L11.11 21l-1.96-.4zm6.7 9L16 8.41V5.58L22.42 12L16 18.41v-2.83zM1.58 12L8 5.58v2.83L4.41 12L8 15.58v2.83z%22/%3E%3C/svg%3E") center / contain no-repeat; }
+.wb-tree-row:not(.wb-tree-row--dir)[data-path$=".csv" i] .wb-tree-icon, .wb-tree-row:not(.wb-tree-row--dir)[data-path$=".tsv" i] .wb-tree-icon { color: #1a7f37; }
+.wb-tree-row:not(.wb-tree-row--dir)[data-path$=".csv" i] .wb-tree-icon::before, .wb-tree-row:not(.wb-tree-row--dir)[data-path$=".tsv" i] .wb-tree-icon::before { -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill=%22currentColor%22 d=%22M14 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V8zm4 18H6V4h7v5h5zm-8-1l2-4H9v-5h6v5l-2 4z%22/%3E%3C/svg%3E") center / contain no-repeat; mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill=%22currentColor%22 d=%22M14 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V8zm4 18H6V4h7v5h5zm-8-1l2-4H9v-5h6v5l-2 4z%22/%3E%3C/svg%3E") center / contain no-repeat; }
+.wb-tree-row:not(.wb-tree-row--dir)[data-path$=".xlsx" i] .wb-tree-icon, .wb-tree-row:not(.wb-tree-row--dir)[data-path$=".xls" i] .wb-tree-icon { color: #1a7f37; }
+.wb-tree-row:not(.wb-tree-row--dir)[data-path$=".xlsx" i] .wb-tree-icon::before, .wb-tree-row:not(.wb-tree-row--dir)[data-path$=".xls" i] .wb-tree-icon::before { -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill=%22currentColor%22 d=%22M14 2H6a2 2 0 0 0-2 2v16c0 1.11.89 2 2 2h12c1.11 0 2-.89 2-2V8zm4 18H6V4h7v5h5zm-5.1-5.5l2.9 4.5H14l-2-3.4l-2 3.4H8.2l2.9-4.5L8.2 10H10l2 3.4l2-3.4h1.8z%22/%3E%3C/svg%3E") center / contain no-repeat; mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill=%22currentColor%22 d=%22M14 2H6a2 2 0 0 0-2 2v16c0 1.11.89 2 2 2h12c1.11 0 2-.89 2-2V8zm4 18H6V4h7v5h5zm-5.1-5.5l2.9 4.5H14l-2-3.4l-2 3.4H8.2l2.9-4.5L8.2 10H10l2 3.4l2-3.4h1.8z%22/%3E%3C/svg%3E") center / contain no-repeat; }
+.wb-tree-row:not(.wb-tree-row--dir)[data-path$=".docx" i] .wb-tree-icon, .wb-tree-row:not(.wb-tree-row--dir)[data-path$=".doc" i] .wb-tree-icon, .wb-tree-row:not(.wb-tree-row--dir)[data-path$=".rtf" i] .wb-tree-icon { color: #2b6cd4; }
+.wb-tree-row:not(.wb-tree-row--dir)[data-path$=".docx" i] .wb-tree-icon::before, .wb-tree-row:not(.wb-tree-row--dir)[data-path$=".doc" i] .wb-tree-icon::before, .wb-tree-row:not(.wb-tree-row--dir)[data-path$=".rtf" i] .wb-tree-icon::before { -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill=%22currentColor%22 d=%22M14 2H6a2 2 0 0 0-2 2v16c0 1.11.89 2 2 2h12c1.11 0 2-.89 2-2V8zm4 18H6V4h7v5h5zm-.65-10l-2.1 9h-1.4l-1.8-6.79l-1.8 6.79h-1.4l-2.2-9h1.5l1.4 6.81l1.8-6.81h1.3l1.8 6.81l1.4-6.81z%22/%3E%3C/svg%3E") center / contain no-repeat; mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill=%22currentColor%22 d=%22M14 2H6a2 2 0 0 0-2 2v16c0 1.11.89 2 2 2h12c1.11 0 2-.89 2-2V8zm4 18H6V4h7v5h5zm-.65-10l-2.1 9h-1.4l-1.8-6.79l-1.8 6.79h-1.4l-2.2-9h1.5l1.4 6.81l1.8-6.81h1.3l1.8 6.81l1.4-6.81z%22/%3E%3C/svg%3E") center / contain no-repeat; }
+.wb-tree-row:not(.wb-tree-row--dir)[data-path$=".txt" i] .wb-tree-icon, .wb-tree-row:not(.wb-tree-row--dir)[data-path$=".text" i] .wb-tree-icon, .wb-tree-row:not(.wb-tree-row--dir)[data-path$=".log" i] .wb-tree-icon { color: #6b7a99; }
+.wb-tree-row:not(.wb-tree-row--dir)[data-path$=".txt" i] .wb-tree-icon::before, .wb-tree-row:not(.wb-tree-row--dir)[data-path$=".text" i] .wb-tree-icon::before, .wb-tree-row:not(.wb-tree-row--dir)[data-path$=".log" i] .wb-tree-icon::before { -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill=%22currentColor%22 d=%22M6 2a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6zm0 2h7v5h5v11H6zm2 8v2h8v-2zm0 4v2h5v-2z%22/%3E%3C/svg%3E") center / contain no-repeat; mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill=%22currentColor%22 d=%22M6 2a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6zm0 2h7v5h5v11H6zm2 8v2h8v-2zm0 4v2h5v-2z%22/%3E%3C/svg%3E") center / contain no-repeat; }
+.wb-tree-row:not(.wb-tree-row--dir)[data-path$=".pptx" i] .wb-tree-icon, .wb-tree-row:not(.wb-tree-row--dir)[data-path$=".ppt" i] .wb-tree-icon, .wb-tree-row:not(.wb-tree-row--dir)[data-path$=".key" i] .wb-tree-icon { color: #e8590c; }
+.wb-tree-row:not(.wb-tree-row--dir)[data-path$=".pptx" i] .wb-tree-icon::before, .wb-tree-row:not(.wb-tree-row--dir)[data-path$=".ppt" i] .wb-tree-icon::before, .wb-tree-row:not(.wb-tree-row--dir)[data-path$=".key" i] .wb-tree-icon::before { -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill=%22currentColor%22 d=%22M14 2H6a2 2 0 0 0-2 2v16c0 1.11.89 2 2 2h12c1.11 0 2-.89 2-2V8zm4 18H6V4h7v5h5zm-2.8-9.2c-.5-.5-1.1-.8-2.4-.8H9v9h1.6v-3.3h2.2c1.3 0 1.8-.2 2.4-.7s.8-1.2.8-2.1s-.2-1.5-.8-2.1M13.9 14c-.3.3-.6.5-1.2.5h-2.1v-3.2h2c.6 0 1 .2 1.3.5s.4.6.4 1.1s-.1.8-.4 1.1%22/%3E%3C/svg%3E") center / contain no-repeat; mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill=%22currentColor%22 d=%22M14 2H6a2 2 0 0 0-2 2v16c0 1.11.89 2 2 2h12c1.11 0 2-.89 2-2V8zm4 18H6V4h7v5h5zm-2.8-9.2c-.5-.5-1.1-.8-2.4-.8H9v9h1.6v-3.3h2.2c1.3 0 1.8-.2 2.4-.7s.8-1.2.8-2.1s-.2-1.5-.8-2.1M13.9 14c-.3.3-.6.5-1.2.5h-2.1v-3.2h2c.6 0 1 .2 1.3.5s.4.6.4 1.1s-.1.8-.4 1.1%22/%3E%3C/svg%3E") center / contain no-repeat; }
+.wb-tree-row:not(.wb-tree-row--dir)[data-path$=".pdf" i] .wb-tree-icon { color: #d1242f; }
+.wb-tree-row:not(.wb-tree-row--dir)[data-path$=".pdf" i] .wb-tree-icon::before { -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill=%22currentColor%22 d=%22M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2m-9.5 8.5c0 .8-.7 1.5-1.5 1.5H7v2H5.5V9H8c.8 0 1.5.7 1.5 1.5zm5 2c0 .8-.7 1.5-1.5 1.5h-2.5V9H13c.8 0 1.5.7 1.5 1.5zm4-3H17v1h1.5V13H17v2h-1.5V9h3zm-6.5 0h1v3h-1zm-5 0h1v1H7z%22/%3E%3C/svg%3E") center / contain no-repeat; mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill=%22currentColor%22 d=%22M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2m-9.5 8.5c0 .8-.7 1.5-1.5 1.5H7v2H5.5V9H8c.8 0 1.5.7 1.5 1.5zm5 2c0 .8-.7 1.5-1.5 1.5h-2.5V9H13c.8 0 1.5.7 1.5 1.5zm4-3H17v1h1.5V13H17v2h-1.5V9h3zm-6.5 0h1v3h-1zm-5 0h1v1H7z%22/%3E%3C/svg%3E") center / contain no-repeat; }
+.wb-tree-row:not(.wb-tree-row--dir)[data-path$=".png" i] .wb-tree-icon, .wb-tree-row:not(.wb-tree-row--dir)[data-path$=".jpg" i] .wb-tree-icon, .wb-tree-row:not(.wb-tree-row--dir)[data-path$=".jpeg" i] .wb-tree-icon, .wb-tree-row:not(.wb-tree-row--dir)[data-path$=".gif" i] .wb-tree-icon, .wb-tree-row:not(.wb-tree-row--dir)[data-path$=".webp" i] .wb-tree-icon, .wb-tree-row:not(.wb-tree-row--dir)[data-path$=".bmp" i] .wb-tree-icon, .wb-tree-row:not(.wb-tree-row--dir)[data-path$=".ico" i] .wb-tree-icon { color: #e0a400; }
+.wb-tree-row:not(.wb-tree-row--dir)[data-path$=".png" i] .wb-tree-icon::before, .wb-tree-row:not(.wb-tree-row--dir)[data-path$=".jpg" i] .wb-tree-icon::before, .wb-tree-row:not(.wb-tree-row--dir)[data-path$=".jpeg" i] .wb-tree-icon::before, .wb-tree-row:not(.wb-tree-row--dir)[data-path$=".gif" i] .wb-tree-icon::before, .wb-tree-row:not(.wb-tree-row--dir)[data-path$=".webp" i] .wb-tree-icon::before, .wb-tree-row:not(.wb-tree-row--dir)[data-path$=".bmp" i] .wb-tree-icon::before, .wb-tree-row:not(.wb-tree-row--dir)[data-path$=".ico" i] .wb-tree-icon::before { -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill=%22currentColor%22 d=%22m14 2l6 6v12a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2zm4 18V9h-5V4H6v16zm-1-7v6H7l5-5l2 2m-4-5.5A1.5 1.5 0 0 1 8.5 12A1.5 1.5 0 0 1 7 10.5A1.5 1.5 0 0 1 8.5 9a1.5 1.5 0 0 1 1.5 1.5%22/%3E%3C/svg%3E") center / contain no-repeat; mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill=%22currentColor%22 d=%22m14 2l6 6v12a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2zm4 18V9h-5V4H6v16zm-1-7v6H7l5-5l2 2m-4-5.5A1.5 1.5 0 0 1 8.5 12A1.5 1.5 0 0 1 7 10.5A1.5 1.5 0 0 1 8.5 9a1.5 1.5 0 0 1 1.5 1.5%22/%3E%3C/svg%3E") center / contain no-repeat; }
+.wb-tree-row:not(.wb-tree-row--dir)[data-path$=".svg" i] .wb-tree-icon { color: #f08c00; }
+.wb-tree-row:not(.wb-tree-row--dir)[data-path$=".svg" i] .wb-tree-icon::before { -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill=%22currentColor%22 d=%22M5.13 10.71h3.74L6.22 8.06c-1.01 0-1.83-.82-1.83-1.84a1.83 1.83 0 0 1 1.83-1.83c1.02 0 1.84.82 1.84 1.83l2.65 2.65V5.13a1.84 1.84 0 0 1 0-2.59a1.81 1.81 0 0 1 2.58 0c.71.71.71 1.87 0 2.59v3.74l2.66-2.65a1.83 1.83 0 0 1 3.66 0c0 1.02-.82 1.84-1.83 1.84l-2.65 2.65h3.74a1.84 1.84 0 0 1 2.59 0c.72.71.72 1.87 0 2.58c-.71.71-1.87.71-2.59 0h-3.74l2.65 2.66c1.01 0 1.83.81 1.83 1.83a1.83 1.83 0 0 1-1.83 1.83c-1.02 0-1.83-.82-1.83-1.83l-2.66-2.65v3.74c.71.72.71 1.88 0 2.59c-.71.72-1.87.72-2.58 0a1.84 1.84 0 0 1 0-2.59v-3.74l-2.65 2.65c0 1.01-.82 1.83-1.84 1.83a1.83 1.83 0 0 1 0-3.66l2.65-2.66H5.13c-.72.71-1.88.71-2.59 0a1.81 1.81 0 0 1 0-2.58a1.84 1.84 0 0 1 2.59 0%22/%3E%3C/svg%3E") center / contain no-repeat; mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill=%22currentColor%22 d=%22M5.13 10.71h3.74L6.22 8.06c-1.01 0-1.83-.82-1.83-1.84a1.83 1.83 0 0 1 1.83-1.83c1.02 0 1.84.82 1.84 1.83l2.65 2.65V5.13a1.84 1.84 0 0 1 0-2.59a1.81 1.81 0 0 1 2.58 0c.71.71.71 1.87 0 2.59v3.74l2.66-2.65a1.83 1.83 0 0 1 3.66 0c0 1.02-.82 1.84-1.83 1.84l-2.65 2.65h3.74a1.84 1.84 0 0 1 2.59 0c.72.71.72 1.87 0 2.58c-.71.71-1.87.71-2.59 0h-3.74l2.65 2.66c1.01 0 1.83.81 1.83 1.83a1.83 1.83 0 0 1-1.83 1.83c-1.02 0-1.83-.82-1.83-1.83l-2.66-2.65v3.74c.71.72.71 1.88 0 2.59c-.71.72-1.87.72-2.58 0a1.84 1.84 0 0 1 0-2.59v-3.74l-2.65 2.65c0 1.01-.82 1.83-1.84 1.83a1.83 1.83 0 0 1 0-3.66l2.65-2.66H5.13c-.72.71-1.88.71-2.59 0a1.81 1.81 0 0 1 0-2.58a1.84 1.84 0 0 1 2.59 0%22/%3E%3C/svg%3E") center / contain no-repeat; }
+.wb-tree-row:not(.wb-tree-row--dir)[data-path$=".zip" i] .wb-tree-icon, .wb-tree-row:not(.wb-tree-row--dir)[data-path$=".tar" i] .wb-tree-icon, .wb-tree-row:not(.wb-tree-row--dir)[data-path$=".gz" i] .wb-tree-icon, .wb-tree-row:not(.wb-tree-row--dir)[data-path$=".rar" i] .wb-tree-icon, .wb-tree-row:not(.wb-tree-row--dir)[data-path$=".7z" i] .wb-tree-icon { color: #8a5a2b; }
+.wb-tree-row:not(.wb-tree-row--dir)[data-path$=".zip" i] .wb-tree-icon::before, .wb-tree-row:not(.wb-tree-row--dir)[data-path$=".tar" i] .wb-tree-icon::before, .wb-tree-row:not(.wb-tree-row--dir)[data-path$=".gz" i] .wb-tree-icon::before, .wb-tree-row:not(.wb-tree-row--dir)[data-path$=".rar" i] .wb-tree-icon::before, .wb-tree-row:not(.wb-tree-row--dir)[data-path$=".7z" i] .wb-tree-icon::before { -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill=%22currentColor%22 d=%22M20 6h-8l-2-2H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2m0 12h-4v-2h-2v2H4V8h10v2h2V8h4zm-4-6v-2h2v2zm-2 0h2v2h-2zm4 4h-2v-2h2z%22/%3E%3C/svg%3E") center / contain no-repeat; mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill=%22currentColor%22 d=%22M20 6h-8l-2-2H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2m0 12h-4v-2h-2v2H4V8h10v2h2V8h4zm-4-6v-2h2v2zm-2 0h2v2h-2zm4 4h-2v-2h2z%22/%3E%3C/svg%3E") center / contain no-repeat; }
+.wb-tree-row:not(.wb-tree-row--dir)[data-path$=".mp3" i] .wb-tree-icon, .wb-tree-row:not(.wb-tree-row--dir)[data-path$=".wav" i] .wb-tree-icon, .wb-tree-row:not(.wb-tree-row--dir)[data-path$=".flac" i] .wb-tree-icon, .wb-tree-row:not(.wb-tree-row--dir)[data-path$=".m4a" i] .wb-tree-icon, .wb-tree-row:not(.wb-tree-row--dir)[data-path$=".ogg" i] .wb-tree-icon { color: #d6336c; }
+.wb-tree-row:not(.wb-tree-row--dir)[data-path$=".mp3" i] .wb-tree-icon::before, .wb-tree-row:not(.wb-tree-row--dir)[data-path$=".wav" i] .wb-tree-icon::before, .wb-tree-row:not(.wb-tree-row--dir)[data-path$=".flac" i] .wb-tree-icon::before, .wb-tree-row:not(.wb-tree-row--dir)[data-path$=".m4a" i] .wb-tree-icon::before, .wb-tree-row:not(.wb-tree-row--dir)[data-path$=".ogg" i] .wb-tree-icon::before { -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill=%22currentColor%22 d=%22M12 3v10.55c-.59-.34-1.27-.55-2-.55c-2.21 0-4 1.79-4 4s1.79 4 4 4s4-1.79 4-4V7h4V3z%22/%3E%3C/svg%3E") center / contain no-repeat; mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill=%22currentColor%22 d=%22M12 3v10.55c-.59-.34-1.27-.55-2-.55c-2.21 0-4 1.79-4 4s1.79 4 4 4s4-1.79 4-4V7h4V3z%22/%3E%3C/svg%3E") center / contain no-repeat; }
+.wb-tree-row:not(.wb-tree-row--dir)[data-path$=".mp4" i] .wb-tree-icon, .wb-tree-row:not(.wb-tree-row--dir)[data-path$=".mov" i] .wb-tree-icon, .wb-tree-row:not(.wb-tree-row--dir)[data-path$=".mkv" i] .wb-tree-icon, .wb-tree-row:not(.wb-tree-row--dir)[data-path$=".avi" i] .wb-tree-icon, .wb-tree-row:not(.wb-tree-row--dir)[data-path$=".webm" i] .wb-tree-icon { color: #c026d3; }
+.wb-tree-row:not(.wb-tree-row--dir)[data-path$=".mp4" i] .wb-tree-icon::before, .wb-tree-row:not(.wb-tree-row--dir)[data-path$=".mov" i] .wb-tree-icon::before, .wb-tree-row:not(.wb-tree-row--dir)[data-path$=".mkv" i] .wb-tree-icon::before, .wb-tree-row:not(.wb-tree-row--dir)[data-path$=".avi" i] .wb-tree-icon::before, .wb-tree-row:not(.wb-tree-row--dir)[data-path$=".webm" i] .wb-tree-icon::before { -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill=%22currentColor%22 d=%22m20.84 2.18l-3.93.78l2.74 3.54l1.97-.4zm-6.87 1.36L12 3.93l2.75 3.53l1.96-.39zm-4.9.96l-1.97.41l2.75 3.53l1.96-.39zm-4.91 1l-.98.19a1.995 1.995 0 0 0-1.57 2.35L2 10l4.9-.97zM20 12v8H4v-8zm2-2H2v10a2 2 0 0 0 2 2h16c1.11 0 2-.89 2-2z%22/%3E%3C/svg%3E") center / contain no-repeat; mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill=%22currentColor%22 d=%22m20.84 2.18l-3.93.78l2.74 3.54l1.97-.4zm-6.87 1.36L12 3.93l2.75 3.53l1.96-.39zm-4.9.96l-1.97.41l2.75 3.53l1.96-.39zm-4.91 1l-.98.19a1.995 1.995 0 0 0-1.57 2.35L2 10l4.9-.97zM20 12v8H4v-8zm2-2H2v10a2 2 0 0 0 2 2h16c1.11 0 2-.89 2-2z%22/%3E%3C/svg%3E") center / contain no-repeat; }
+.wb-tree-row:not(.wb-tree-row--dir)[data-path$=".canvas" i] .wb-tree-icon { color: #f08c00; }
+.wb-tree-row:not(.wb-tree-row--dir)[data-path$=".canvas" i] .wb-tree-icon::before { -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill=%22currentColor%22 d=%22M19.5 17c-.14 0-.26 0-.39.04L17.5 13.8c.45-.45.75-1.09.75-1.8a2.5 2.5 0 0 0-2.5-2.5c-.14 0-.25 0-.4.04L13.74 6.3c.47-.46.76-1.09.76-1.8a2.5 2.5 0 0 0-5 0c0 .7.29 1.34.76 1.79L8.65 9.54c-.15-.04-.26-.04-.4-.04a2.5 2.5 0 0 0-2.5 2.5c0 .71.29 1.34.75 1.79l-1.61 3.25C4.76 17 4.64 17 4.5 17a2.5 2.5 0 0 0 0 5A2.5 2.5 0 0 0 7 19.5c0-.7-.29-1.34-.76-1.79l1.62-3.25c.14.04.26.04.39.04s.25 0 .38-.04l1.63 3.25c-.47.45-.76 1.09-.76 1.79a2.5 2.5 0 0 0 5 0A2.5 2.5 0 0 0 12 17c-.13 0-.26 0-.39.04L10 13.8c.45-.45.75-1.09.75-1.8c0-.7-.29-1.33-.75-1.79l1.61-3.25c.13.04.26.04.39.04s.26 0 .39-.04L14 10.21a2.5 2.5 0 0 0 1.75 4.29c.13 0 .25 0 .38-.04l1.63 3.25c-.47.45-.76 1.09-.76 1.79a2.5 2.5 0 0 0 5 0a2.5 2.5 0 0 0-2.5-2.5m-15 3.5c-.55 0-1-.45-1-1s.45-1 1-1s1 .45 1 1s-.45 1-1 1m8.5-1c0 .55-.45 1-1 1s-1-.45-1-1s.45-1 1-1s1 .45 1 1M7.25 12c0-.55.45-1 1-1s1 .45 1 1s-.45 1-1 1s-1-.45-1-1M11 4.5c0-.55.45-1 1-1s1 .45 1 1s-.45 1-1 1s-1-.45-1-1m3.75 7.5c0-.55.45-1 1-1s1 .45 1 1s-.45 1-1 1s-1-.45-1-1m4.75 8.5c-.55 0-1-.45-1-1s.45-1 1-1s1 .45 1 1s-.45 1-1 1%22/%3E%3C/svg%3E") center / contain no-repeat; mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill=%22currentColor%22 d=%22M19.5 17c-.14 0-.26 0-.39.04L17.5 13.8c.45-.45.75-1.09.75-1.8a2.5 2.5 0 0 0-2.5-2.5c-.14 0-.25 0-.4.04L13.74 6.3c.47-.46.76-1.09.76-1.8a2.5 2.5 0 0 0-5 0c0 .7.29 1.34.76 1.79L8.65 9.54c-.15-.04-.26-.04-.4-.04a2.5 2.5 0 0 0-2.5 2.5c0 .71.29 1.34.75 1.79l-1.61 3.25C4.76 17 4.64 17 4.5 17a2.5 2.5 0 0 0 0 5A2.5 2.5 0 0 0 7 19.5c0-.7-.29-1.34-.76-1.79l1.62-3.25c.14.04.26.04.39.04s.25 0 .38-.04l1.63 3.25c-.47.45-.76 1.09-.76 1.79a2.5 2.5 0 0 0 5 0A2.5 2.5 0 0 0 12 17c-.13 0-.26 0-.39.04L10 13.8c.45-.45.75-1.09.75-1.8c0-.7-.29-1.33-.75-1.79l1.61-3.25c.13.04.26.04.39.04s.26 0 .39-.04L14 10.21a2.5 2.5 0 0 0 1.75 4.29c.13 0 .25 0 .38-.04l1.63 3.25c-.47.45-.76 1.09-.76 1.79a2.5 2.5 0 0 0 5 0a2.5 2.5 0 0 0-2.5-2.5m-15 3.5c-.55 0-1-.45-1-1s.45-1 1-1s1 .45 1 1s-.45 1-1 1m8.5-1c0 .55-.45 1-1 1s-1-.45-1-1s.45-1 1-1s1 .45 1 1M7.25 12c0-.55.45-1 1-1s1 .45 1 1s-.45 1-1 1s-1-.45-1-1M11 4.5c0-.55.45-1 1-1s1 .45 1 1s-.45 1-1 1s-1-.45-1-1m3.75 7.5c0-.55.45-1 1-1s1 .45 1 1s-.45 1-1 1s-1-.45-1-1m4.75 8.5c-.55 0-1-.45-1-1s.45-1 1-1s1 .45 1 1s-.45 1-1 1%22/%3E%3C/svg%3E") center / contain no-repeat; }
+.wb-tree-row:not(.wb-tree-row--dir)[data-path$=".base" i] .wb-tree-icon { color: #e0a400; }
+.wb-tree-row:not(.wb-tree-row--dir)[data-path$=".base" i] .wb-tree-icon::before { -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill=%22currentColor%22 d=%22M12 3C7.58 3 4 4.79 4 7v10c0 2.21 3.59 4 8 4s8-1.79 8-4V7c0-2.21-3.58-4-8-4m6 14c0 .5-2.13 2-6 2s-6-1.5-6-2v-2.23c1.61.78 3.72 1.23 6 1.23s4.39-.45 6-1.23zm0-4.55c-1.3.95-3.58 1.55-6 1.55s-4.7-.6-6-1.55V9.64c1.47.83 3.61 1.36 6 1.36s4.53-.53 6-1.36zM12 9C8.13 9 6 7.5 6 7s2.13-2 6-2s6 1.5 6 2s-2.13 2-6 2%22/%3E%3C/svg%3E") center / contain no-repeat; mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill=%22currentColor%22 d=%22M12 3C7.58 3 4 4.79 4 7v10c0 2.21 3.59 4 8 4s8-1.79 8-4V7c0-2.21-3.58-4-8-4m6 14c0 .5-2.13 2-6 2s-6-1.5-6-2v-2.23c1.61.78 3.72 1.23 6 1.23s4.39-.45 6-1.23zm0-4.55c-1.3.95-3.58 1.55-6 1.55s-4.7-.6-6-1.55V9.64c1.47.83 3.61 1.36 6 1.36s4.53-.53 6-1.36zM12 9C8.13 9 6 7.5 6 7s2.13-2 6-2s6 1.5 6 2s-2.13 2-6 2%22/%3E%3C/svg%3E") center / contain no-repeat; }
+.wb-tree-row:not(.wb-tree-row--dir)[data-path$="/README.md" i] .wb-tree-icon { color: #3b82f6; }
+.wb-tree-row:not(.wb-tree-row--dir)[data-path$="/README.md" i] .wb-tree-icon::before { -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill=%22currentColor%22 d=%22M13 9h-2V7h2m0 10h-2v-6h2m-1-9A10 10 0 0 0 2 12a10 10 0 0 0 10 10a10 10 0 0 0 10-10A10 10 0 0 0 12 2%22/%3E%3C/svg%3E") center / contain no-repeat; mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill=%22currentColor%22 d=%22M13 9h-2V7h2m0 10h-2v-6h2m-1-9A10 10 0 0 0 2 12a10 10 0 0 0 10 10a10 10 0 0 0 10-10A10 10 0 0 0 12 2%22/%3E%3C/svg%3E") center / contain no-repeat; }
+.wb-tree-row:not(.wb-tree-row--dir)[data-path$=".DS_Store"] .wb-tree-icon { opacity: 0.45; }
+
+/* ---------- images ---------- */
+/* Exported HTML repeats the alt text beside the image; hide it. */
+.typora-export .md-image > .md-plain { display: none; }
+:is(.ty-document, .typora-export) .md-image img { border-radius: var(--ib-radius-md); }
+/* Ignorance alt keywords: ![gray|240](a.png), ![right|300](b.png) */
+:is(.ty-document, .typora-export) img:is([alt="gray"], [alt^="gray|"], [alt*="|gray"]) { filter: grayscale(1); }
+:is(.ty-document, .typora-export) img:is([alt="sepia"], [alt^="sepia|"], [alt*="|sepia"]) { filter: sepia(0.8); }
+:is(.ty-document, .typora-export) img:is([alt="invert"], [alt^="invert|"], [alt*="|invert"]) { filter: invert(1) hue-rotate(180deg); }
+:is(.ty-document, .typora-export) img:is([alt="blur"], [alt^="blur|"], [alt*="|blur"]) { filter: blur(6px); transition: filter 0.2s; }
+:is(.ty-document, .typora-export) img:is([alt="blur"], [alt^="blur|"], [alt*="|blur"]):hover { filter: none; }
+:root[data-appearance="dark"] :is(.ty-document, .typora-export) img:is([alt="dark-invert"], [alt^="dark-invert|"], [alt*="|dark-invert"]) { filter: invert(1) hue-rotate(180deg); }
+:is(.ty-document, .typora-export) .md-image:has(> img:is([alt^="right|"], [alt="right"])) { float: right; margin: 0 0 0.6em 1em; }
+:is(.ty-document, .typora-export) .md-image:has(> img:is([alt^="left|"], [alt="left"])) { float: left; margin: 0 1em 0.6em 0; }
+
+/* ---------- Ignorance Advanced inline rules (editor only) ---------- */
+.ty-document .ib-badge {
+  padding: 1px 8px;
+  border-radius: 999px;
+  background: var(--ib-tint-strong);
+  color: var(--color-accent);
+  font-size: 0.85em;
+  font-weight: 500;
+  white-space: nowrap;
+}
+.ty-document .ib-badge-green { background: color-mix(in srgb, var(--color-alert-tip) calc(14% * (1 - var(--theme-eink, 0))), var(--color-bg)); color: var(--color-alert-tip); }
+.ty-document .ib-badge-red { background: color-mix(in srgb, var(--color-alert-caution) calc(14% * (1 - var(--theme-eink, 0))), var(--color-bg)); color: var(--color-alert-caution); }
+.ty-document .ib-badge-orange { background: color-mix(in srgb, var(--color-alert-warning) calc(14% * (1 - var(--theme-eink, 0))), var(--color-bg)); color: var(--color-alert-warning); }
+.ty-document .ib-badge-purple { background: color-mix(in srgb, var(--color-alert-important) calc(14% * (1 - var(--theme-eink, 0))), var(--color-bg)); color: var(--color-alert-important); }
+.ty-document .ib-badge-amber { background: color-mix(in srgb, #b7791f calc(14% * (1 - var(--theme-eink, 0))), var(--color-bg)); color: #9a6410; }
+.ty-document .ib-badge-gray { background: color-mix(in srgb, var(--color-muted) calc(14% * (1 - var(--theme-eink, 0))), var(--color-bg)); color: var(--color-muted); }
+.ty-document .ib-spoiler {
+  border-radius: var(--ib-radius-sm);
+  background: color-mix(in srgb, var(--color-text) calc(55% * (1 - var(--theme-eink, 0))), var(--color-bg));
+  color: transparent;
+  transition: color 0.15s, background 0.15s;
+}
+.ty-document .ib-spoiler:hover {
+  background: var(--color-muted-bg);
+  color: var(--color-text);
+}
+.ty-document .ib-ruby {
+  position: relative;
+  border-bottom: 1px dotted var(--color-accent);
+}
+.ty-document .ib-ruby::before {
+  content: attr(title);
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 0.55em;
+  line-height: 1;
+  white-space: nowrap;
+  color: var(--color-muted);
+  pointer-events: none;
+}
+.ty-document .ib-hl-red { background: color-mix(in srgb, var(--color-alert-caution) calc(18% * (1 - var(--theme-eink, 0))), transparent); border-radius: var(--ib-radius-sm); }
+.ty-document .ib-hl-orange { background: color-mix(in srgb, var(--color-alert-warning) calc(20% * (1 - var(--theme-eink, 0))), transparent); border-radius: var(--ib-radius-sm); }
+.ty-document .ib-hl-green { background: color-mix(in srgb, var(--color-alert-tip) calc(18% * (1 - var(--theme-eink, 0))), transparent); border-radius: var(--ib-radius-sm); }
+.ty-document .ib-hl-blue { background: color-mix(in srgb, var(--color-alert-note) calc(18% * (1 - var(--theme-eink, 0))), transparent); border-radius: var(--ib-radius-sm); }
+.ty-document .ib-hl-purple { background: color-mix(in srgb, var(--color-alert-important) calc(18% * (1 - var(--theme-eink, 0))), transparent); border-radius: var(--ib-radius-sm); }
+.ty-document .ib-crumb {
+  color: var(--color-muted);
+  font-size: 0.9em;
+}
+/* The ((kind: ... )) wrapper of a badge, spoiler, ruby or crumb is hidden; hovering the line shows it for editing. */
+.ty-document .ib-syn { font-size: 0; }
+.ty-document :is(p, li, td, th, h1, h2, h3, h4, h5, h6):is(:hover, .md-focus) .ib-syn {
+  font-size: inherit;
+  color: var(--color-muted);
+  opacity: 0.6;
+}
+
+/* ---------- VLOOK color codes: text_~Rd~_ colors the element before it; _~Gd~_ at paragraph start colors the paragraph.
+   The suffix is hidden; the extension (editor) or the export script adds the vl1-/vl2-/vlb classes. ---------- */
+:is(.ty-document, .typora-export) :is(:is(strong, mark, u, em, del, span, a):has(+ em .vl1-Rd), p:has(> em:first-child .vl1-Rd)), .typora-export :is(:is(strong, mark, u, em, del, span, a):has(+ em .vl1-Rd), p:has(> em:first-child .vl1-Rd)) { --vl1: #d1242f; }
+:is(.ty-document, .typora-export) :is(:is(strong, mark, u, em, del, span, a):has(+ em .vl1-Ro), p:has(> em:first-child .vl1-Ro)), .typora-export :is(:is(strong, mark, u, em, del, span, a):has(+ em .vl1-Ro), p:has(> em:first-child .vl1-Ro)) { --vl1: #e5484d; }
+:is(.ty-document, .typora-export) :is(:is(strong, mark, u, em, del, span, a):has(+ em .vl1-Og), p:has(> em:first-child .vl1-Og)), .typora-export :is(:is(strong, mark, u, em, del, span, a):has(+ em .vl1-Og), p:has(> em:first-child .vl1-Og)) { --vl1: #d9730d; }
+:is(.ty-document, .typora-export) :is(:is(strong, mark, u, em, del, span, a):has(+ em .vl1-Ye), p:has(> em:first-child .vl1-Ye)), .typora-export :is(:is(strong, mark, u, em, del, span, a):has(+ em .vl1-Ye), p:has(> em:first-child .vl1-Ye)) { --vl1: #c99a00; }
+:is(.ty-document, .typora-export) :is(:is(strong, mark, u, em, del, span, a):has(+ em .vl1-Gd), p:has(> em:first-child .vl1-Gd)), .typora-export :is(:is(strong, mark, u, em, del, span, a):has(+ em .vl1-Gd), p:has(> em:first-child .vl1-Gd)) { --vl1: #b8860b; }
+:is(.ty-document, .typora-export) :is(:is(strong, mark, u, em, del, span, a):has(+ em .vl1-Lm), p:has(> em:first-child .vl1-Lm)), .typora-export :is(:is(strong, mark, u, em, del, span, a):has(+ em .vl1-Lm), p:has(> em:first-child .vl1-Lm)) { --vl1: #5f9e0a; }
+:is(.ty-document, .typora-export) :is(:is(strong, mark, u, em, del, span, a):has(+ em .vl1-Gn), p:has(> em:first-child .vl1-Gn)), .typora-export :is(:is(strong, mark, u, em, del, span, a):has(+ em .vl1-Gn), p:has(> em:first-child .vl1-Gn)) { --vl1: #1a7f37; }
+:is(.ty-document, .typora-export) :is(:is(strong, mark, u, em, del, span, a):has(+ em .vl1-Mn), p:has(> em:first-child .vl1-Mn)), .typora-export :is(:is(strong, mark, u, em, del, span, a):has(+ em .vl1-Mn), p:has(> em:first-child .vl1-Mn)) { --vl1: #0f9d83; }
+:is(.ty-document, .typora-export) :is(:is(strong, mark, u, em, del, span, a):has(+ em .vl1-Ol), p:has(> em:first-child .vl1-Ol)), .typora-export :is(:is(strong, mark, u, em, del, span, a):has(+ em .vl1-Ol), p:has(> em:first-child .vl1-Ol)) { --vl1: #6b7a1f; }
+:is(.ty-document, .typora-export) :is(:is(strong, mark, u, em, del, span, a):has(+ em .vl1-Aq), p:has(> em:first-child .vl1-Aq)), .typora-export :is(:is(strong, mark, u, em, del, span, a):has(+ em .vl1-Aq), p:has(> em:first-child .vl1-Aq)) { --vl1: #0891b2; }
+:is(.ty-document, .typora-export) :is(:is(strong, mark, u, em, del, span, a):has(+ em .vl1-Cy), p:has(> em:first-child .vl1-Cy)), .typora-export :is(:is(strong, mark, u, em, del, span, a):has(+ em .vl1-Cy), p:has(> em:first-child .vl1-Cy)) { --vl1: #0e90c4; }
+:is(.ty-document, .typora-export) :is(:is(strong, mark, u, em, del, span, a):has(+ em .vl1-Bu), p:has(> em:first-child .vl1-Bu)), .typora-export :is(:is(strong, mark, u, em, del, span, a):has(+ em .vl1-Bu), p:has(> em:first-child .vl1-Bu)) { --vl1: #0969da; }
+:is(.ty-document, .typora-export) :is(:is(strong, mark, u, em, del, span, a):has(+ em .vl1-Pu), p:has(> em:first-child .vl1-Pu)), .typora-export :is(:is(strong, mark, u, em, del, span, a):has(+ em .vl1-Pu), p:has(> em:first-child .vl1-Pu)) { --vl1: #8250df; }
+:is(.ty-document, .typora-export) :is(:is(strong, mark, u, em, del, span, a):has(+ em .vl1-Se), p:has(> em:first-child .vl1-Se)), .typora-export :is(:is(strong, mark, u, em, del, span, a):has(+ em .vl1-Se), p:has(> em:first-child .vl1-Se)) { --vl1: #5b5fc7; }
+:is(.ty-document, .typora-export) :is(:is(strong, mark, u, em, del, span, a):has(+ em .vl1-Au), p:has(> em:first-child .vl1-Au)), .typora-export :is(:is(strong, mark, u, em, del, span, a):has(+ em .vl1-Au), p:has(> em:first-child .vl1-Au)) { --vl1: #9a3fbf; }
+:is(.ty-document, .typora-export) :is(:is(strong, mark, u, em, del, span, a):has(+ em .vl1-Pk), p:has(> em:first-child .vl1-Pk)), .typora-export :is(:is(strong, mark, u, em, del, span, a):has(+ em .vl1-Pk), p:has(> em:first-child .vl1-Pk)) { --vl1: #d6336c; }
+:is(.ty-document, .typora-export) :is(:is(strong, mark, u, em, del, span, a):has(+ em .vl1-Bn), p:has(> em:first-child .vl1-Bn)), .typora-export :is(:is(strong, mark, u, em, del, span, a):has(+ em .vl1-Bn), p:has(> em:first-child .vl1-Bn)) { --vl1: #8a5a2b; }
+:is(.ty-document, .typora-export) :is(:is(strong, mark, u, em, del, span, a):has(+ em .vl1-Gy), p:has(> em:first-child .vl1-Gy)), .typora-export :is(:is(strong, mark, u, em, del, span, a):has(+ em .vl1-Gy), p:has(> em:first-child .vl1-Gy)) { --vl1: #6b7280; }
+:is(.ty-document, .typora-export) :is(:is(strong, mark, u, em, del, span, a):has(+ em .vl1-Wt), p:has(> em:first-child .vl1-Wt)), .typora-export :is(:is(strong, mark, u, em, del, span, a):has(+ em .vl1-Wt), p:has(> em:first-child .vl1-Wt)) { --vl1: #ffffff; }
+:is(.ty-document, .typora-export) :is(:is(strong, mark, u, em, del, span, a):has(+ em .vl1-Bk), p:has(> em:first-child .vl1-Bk)), .typora-export :is(:is(strong, mark, u, em, del, span, a):has(+ em .vl1-Bk), p:has(> em:first-child .vl1-Bk)) { --vl1: #111827; }
+:is(.ty-document, .typora-export) :is(:is(strong, mark, u, em, del, span, a):has(+ em .vl1-T1), p:has(> em:first-child .vl1-T1)), .typora-export :is(:is(strong, mark, u, em, del, span, a):has(+ em .vl1-T1), p:has(> em:first-child .vl1-T1)) { --vl1: var(--color-accent); }
+:is(.ty-document, .typora-export) :is(:is(strong, mark, u, em, del, span, a):has(+ em .vl1-T2), p:has(> em:first-child .vl1-T2)), .typora-export :is(:is(strong, mark, u, em, del, span, a):has(+ em .vl1-T2), p:has(> em:first-child .vl1-T2)) { --vl1: color-mix(in srgb, var(--color-accent) 60%, #d6336c); }
+:is(.ty-document, .typora-export) :is(:is(strong, mark, u, em, del, span, a):has(+ em .vl2-Rd), p:has(> em:first-child .vl2-Rd)), .typora-export :is(:is(strong, mark, u, em, del, span, a):has(+ em .vl2-Rd), p:has(> em:first-child .vl2-Rd)) { --vl2: #d1242f; }
+:is(.ty-document, .typora-export) :is(:is(strong, mark, u, em, del, span, a):has(+ em .vl2-Ro), p:has(> em:first-child .vl2-Ro)), .typora-export :is(:is(strong, mark, u, em, del, span, a):has(+ em .vl2-Ro), p:has(> em:first-child .vl2-Ro)) { --vl2: #e5484d; }
+:is(.ty-document, .typora-export) :is(:is(strong, mark, u, em, del, span, a):has(+ em .vl2-Og), p:has(> em:first-child .vl2-Og)), .typora-export :is(:is(strong, mark, u, em, del, span, a):has(+ em .vl2-Og), p:has(> em:first-child .vl2-Og)) { --vl2: #d9730d; }
+:is(.ty-document, .typora-export) :is(:is(strong, mark, u, em, del, span, a):has(+ em .vl2-Ye), p:has(> em:first-child .vl2-Ye)), .typora-export :is(:is(strong, mark, u, em, del, span, a):has(+ em .vl2-Ye), p:has(> em:first-child .vl2-Ye)) { --vl2: #c99a00; }
+:is(.ty-document, .typora-export) :is(:is(strong, mark, u, em, del, span, a):has(+ em .vl2-Gd), p:has(> em:first-child .vl2-Gd)), .typora-export :is(:is(strong, mark, u, em, del, span, a):has(+ em .vl2-Gd), p:has(> em:first-child .vl2-Gd)) { --vl2: #b8860b; }
+:is(.ty-document, .typora-export) :is(:is(strong, mark, u, em, del, span, a):has(+ em .vl2-Lm), p:has(> em:first-child .vl2-Lm)), .typora-export :is(:is(strong, mark, u, em, del, span, a):has(+ em .vl2-Lm), p:has(> em:first-child .vl2-Lm)) { --vl2: #5f9e0a; }
+:is(.ty-document, .typora-export) :is(:is(strong, mark, u, em, del, span, a):has(+ em .vl2-Gn), p:has(> em:first-child .vl2-Gn)), .typora-export :is(:is(strong, mark, u, em, del, span, a):has(+ em .vl2-Gn), p:has(> em:first-child .vl2-Gn)) { --vl2: #1a7f37; }
+:is(.ty-document, .typora-export) :is(:is(strong, mark, u, em, del, span, a):has(+ em .vl2-Mn), p:has(> em:first-child .vl2-Mn)), .typora-export :is(:is(strong, mark, u, em, del, span, a):has(+ em .vl2-Mn), p:has(> em:first-child .vl2-Mn)) { --vl2: #0f9d83; }
+:is(.ty-document, .typora-export) :is(:is(strong, mark, u, em, del, span, a):has(+ em .vl2-Ol), p:has(> em:first-child .vl2-Ol)), .typora-export :is(:is(strong, mark, u, em, del, span, a):has(+ em .vl2-Ol), p:has(> em:first-child .vl2-Ol)) { --vl2: #6b7a1f; }
+:is(.ty-document, .typora-export) :is(:is(strong, mark, u, em, del, span, a):has(+ em .vl2-Aq), p:has(> em:first-child .vl2-Aq)), .typora-export :is(:is(strong, mark, u, em, del, span, a):has(+ em .vl2-Aq), p:has(> em:first-child .vl2-Aq)) { --vl2: #0891b2; }
+:is(.ty-document, .typora-export) :is(:is(strong, mark, u, em, del, span, a):has(+ em .vl2-Cy), p:has(> em:first-child .vl2-Cy)), .typora-export :is(:is(strong, mark, u, em, del, span, a):has(+ em .vl2-Cy), p:has(> em:first-child .vl2-Cy)) { --vl2: #0e90c4; }
+:is(.ty-document, .typora-export) :is(:is(strong, mark, u, em, del, span, a):has(+ em .vl2-Bu), p:has(> em:first-child .vl2-Bu)), .typora-export :is(:is(strong, mark, u, em, del, span, a):has(+ em .vl2-Bu), p:has(> em:first-child .vl2-Bu)) { --vl2: #0969da; }
+:is(.ty-document, .typora-export) :is(:is(strong, mark, u, em, del, span, a):has(+ em .vl2-Pu), p:has(> em:first-child .vl2-Pu)), .typora-export :is(:is(strong, mark, u, em, del, span, a):has(+ em .vl2-Pu), p:has(> em:first-child .vl2-Pu)) { --vl2: #8250df; }
+:is(.ty-document, .typora-export) :is(:is(strong, mark, u, em, del, span, a):has(+ em .vl2-Se), p:has(> em:first-child .vl2-Se)), .typora-export :is(:is(strong, mark, u, em, del, span, a):has(+ em .vl2-Se), p:has(> em:first-child .vl2-Se)) { --vl2: #5b5fc7; }
+:is(.ty-document, .typora-export) :is(:is(strong, mark, u, em, del, span, a):has(+ em .vl2-Au), p:has(> em:first-child .vl2-Au)), .typora-export :is(:is(strong, mark, u, em, del, span, a):has(+ em .vl2-Au), p:has(> em:first-child .vl2-Au)) { --vl2: #9a3fbf; }
+:is(.ty-document, .typora-export) :is(:is(strong, mark, u, em, del, span, a):has(+ em .vl2-Pk), p:has(> em:first-child .vl2-Pk)), .typora-export :is(:is(strong, mark, u, em, del, span, a):has(+ em .vl2-Pk), p:has(> em:first-child .vl2-Pk)) { --vl2: #d6336c; }
+:is(.ty-document, .typora-export) :is(:is(strong, mark, u, em, del, span, a):has(+ em .vl2-Bn), p:has(> em:first-child .vl2-Bn)), .typora-export :is(:is(strong, mark, u, em, del, span, a):has(+ em .vl2-Bn), p:has(> em:first-child .vl2-Bn)) { --vl2: #8a5a2b; }
+:is(.ty-document, .typora-export) :is(:is(strong, mark, u, em, del, span, a):has(+ em .vl2-Gy), p:has(> em:first-child .vl2-Gy)), .typora-export :is(:is(strong, mark, u, em, del, span, a):has(+ em .vl2-Gy), p:has(> em:first-child .vl2-Gy)) { --vl2: #6b7280; }
+:is(.ty-document, .typora-export) :is(:is(strong, mark, u, em, del, span, a):has(+ em .vl2-Wt), p:has(> em:first-child .vl2-Wt)), .typora-export :is(:is(strong, mark, u, em, del, span, a):has(+ em .vl2-Wt), p:has(> em:first-child .vl2-Wt)) { --vl2: #ffffff; }
+:is(.ty-document, .typora-export) :is(:is(strong, mark, u, em, del, span, a):has(+ em .vl2-Bk), p:has(> em:first-child .vl2-Bk)), .typora-export :is(:is(strong, mark, u, em, del, span, a):has(+ em .vl2-Bk), p:has(> em:first-child .vl2-Bk)) { --vl2: #111827; }
+:is(.ty-document, .typora-export) :is(:is(strong, mark, u, em, del, span, a):has(+ em .vl2-T1), p:has(> em:first-child .vl2-T1)), .typora-export :is(:is(strong, mark, u, em, del, span, a):has(+ em .vl2-T1), p:has(> em:first-child .vl2-T1)) { --vl2: var(--color-accent); }
+:is(.ty-document, .typora-export) :is(:is(strong, mark, u, em, del, span, a):has(+ em .vl2-T2), p:has(> em:first-child .vl2-T2)), .typora-export :is(:is(strong, mark, u, em, del, span, a):has(+ em .vl2-T2), p:has(> em:first-child .vl2-T2)) { --vl2: color-mix(in srgb, var(--color-accent) 60%, #d6336c); }
+:is(.ty-document, .typora-export) :is(strong, mark, u, em, del, span, a):has(+ em [class*="vl1-"]) { color: var(--vl1); }
+:is(.ty-document, .typora-export) p:has(> em:first-child [class*="vl1-"]) { color: var(--vl1); }
+:is(.ty-document, .typora-export) :is(strong, mark, u, em, del, span, a):has(+ em [class*="vl1-"]):has(+ em .vlb),
+:is(.ty-document, .typora-export) p:has(> em:first-child .vlb) { background: linear-gradient(90deg, var(--vl1), var(--vl2, var(--vl1))); color: #fff; border-radius: 6px; padding: 0 0.3em; }
+:is(.ty-document, .typora-export) :is(em, strong):has(+ em [class*="vl1-"]) code { color: inherit; background: color-mix(in srgb, var(--vl1) 12%, transparent); }
+:is(.ty-document, .typora-export) em:has(+ em .vlb):has(code) { background: none; padding: 0; color: #fff; }
+:is(.ty-document, .typora-export) em:has(+ em .vlb) code { background: linear-gradient(90deg, var(--vl1), var(--vl2, var(--vl1))); color: #fff; }
+:is(.ty-document, .typora-export) em:has(> sub [class*="vl1-"]) { font-size: 0; }
+.ty-document :is(p, li, td, th):is(:hover, .md-focus) em:has(> sub [class*="vl1-"]) { font-size: inherit; color: var(--color-muted); opacity: 0.6; }
+
+
+@media print {
+  :is(.ty-document, .typora-export) :is(.md-blockquote, .md-alert, .md-custom-container) {
+    break-inside: avoid;
+  }
+}
+
+/* ---------- the two cats (Ignorance brand) ---------- */
+/* Inlined as data: URIs by scripts/build-theme.sh; Typora drops any other external resource reference. */
+:is(.ty-document, .typora-export) {
+  --ib-cats: url("data:image/webp;base64,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");
+  --ib-cats-sm: url("data:image/webp;base64,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");
+}
+/* Off by default: the "双猫" option in Settings ▸ View (variant `mascot`) sets
+   --theme-ib-cats to 1. Everything below scales with it, so "off" takes no space. */
+/* Quietly at the end of every document. */
+.ty-document::after,
+.typora-export-content::after {
+  content: "";
+  display: block;
+  width: calc(var(--theme-ib-cats, 0) * 64px);
+  height: calc(var(--theme-ib-cats, 0) * 45px);
+  margin: calc(var(--theme-ib-cats, 0) * 56px) auto calc(var(--theme-ib-cats, 0) * 8px);
+  background: var(--ib-cats-sm) center / contain no-repeat;
+  opacity: 0.5;
+  pointer-events: none;
+}
+/* ---------- properties (front matter) card ---------- */
+/* A tinted card with a heading band: icon tile + bold title, fields below. Both
+   Typora modes are styled: the YAML source and the field form. */
+:is(.ty-document, .typora-export) .md-meta-block:not(.md-meta-block--fields),
+:is(.ty-document, .typora-export) .md-meta-block--fields:not(.md-meta-block--collapsed) .md-meta-properties-card {
+  border: 1px solid color-mix(in srgb, var(--color-accent) 20%, var(--ib-line));
+  border-radius: 16px;
+  background: color-mix(in srgb, var(--color-accent) calc(5% * (1 - var(--theme-eink, 0))), var(--color-bg));
+  overflow: hidden;
+}
+:is(.ty-document, .typora-export) .md-meta-header {
+  height: 52px;
+  padding: 0 18px;
+  gap: 10px;
+  color: var(--color-text);
+  background: transparent;
+  border-bottom: 1px solid color-mix(in srgb, var(--color-accent) 14%, var(--ib-line));
+}
+:is(.ty-document, .typora-export) .md-meta-title {
+  position: relative;
+  padding-inline-start: 40px;
+  color: var(--color-text);
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: 0;
+  line-height: 30px;
+}
+:is(.ty-document, .typora-export) .md-meta-title::before {
+  content: "";
+  position: absolute;
+  inset-inline-start: 0;
+  top: 50%;
+  width: 30px;
+  height: 30px;
+  margin-top: -15px;
+  border-radius: 9px;
+  background: var(--ib-tint-strong);
+}
+:is(.ty-document, .typora-export) .md-meta-title::after {
+  content: "";
+  position: absolute;
+  inset-inline-start: 6px;
+  top: 50%;
+  width: 18px;
+  height: 18px;
+  margin-top: -9px;
+  background: var(--color-accent);
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z'/%3E%3Cpath d='M14 2v4a2 2 0 0 0 2 2h4'/%3E%3Cpath d='M10 9H8'/%3E%3Cpath d='M16 13H8'/%3E%3Cpath d='M16 17H8'/%3E%3C/svg%3E") center / 18px 18px no-repeat;
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z'/%3E%3Cpath d='M14 2v4a2 2 0 0 0 2 2h4'/%3E%3Cpath d='M10 9H8'/%3E%3Cpath d='M16 13H8'/%3E%3Cpath d='M16 17H8'/%3E%3C/svg%3E") center / 18px 18px no-repeat;
+}
+:is(.ty-document, .typora-export) .md-meta-summary { display: none; }
+:is(.ty-document, .typora-export) .md-meta-mode { background: var(--ib-tint-strong); }
+/* YAML source: body font instead of monospace, roomier. */
+:is(.ty-document, .typora-export) .md-meta-block-inner {
+  padding: 12px 22px 18px;
+  color: var(--color-text);
+  font-family: var(--ty-body-font, inherit);
+  font-size: 0.95em;
+  line-height: 1.8;
+}
+/* Field form. */
+:is(.ty-document, .typora-export) .md-meta-fields { padding: 6px 14px 14px; }
+:is(.ty-document, .typora-export) .md-meta-row { border-bottom: 1px solid color-mix(in srgb, var(--ib-line) 55%, transparent); }
+:is(.ty-document, .typora-export) .md-meta-row:last-child { border-bottom: 0; }
+:is(.ty-document, .typora-export) .md-meta-key-input { font-size: 0.86em; letter-spacing: 0.02em; }
+:is(.ty-document, .typora-export) .md-meta-row:hover,
+:is(.ty-document, .typora-export) .md-meta-row:focus-within { background: var(--ib-tint-strong); border-radius: var(--ib-radius-md); }
+:is(.ty-document, .typora-export) .md-meta-key-icon { color: var(--color-accent); }
+:is(.ty-document, .typora-export) .md-meta-key-input { color: var(--color-muted); }
+:is(.ty-document, .typora-export) .md-meta-key-input:focus,
+:is(.ty-document, .typora-export) .md-meta-value-input:focus { background: var(--color-bg); }
+:is(.ty-document, .typora-export) .md-meta-tag { color: var(--color-accent); background: var(--ib-tint-strong); }
+
+/* Per-field icons in the field form, drawn from Lucide (ISC, see vendor/LICENSE-lucide.txt). */
+:is(.ty-document, .typora-export) .md-meta-key:is(:has([aria-label="title key" i]),:has([aria-label="subtitle key" i]),:has([aria-label="author key" i]),:has([aria-label="date key" i]),:has([aria-label="created key" i]),:has([aria-label="updated key" i]),:has([aria-label="modified key" i]),:has([aria-label="published key" i]),:has([aria-label="source key" i]),:has([aria-label="description key" i]),:has([aria-label="tags key" i]),:has([aria-label="theme key" i]),:has([aria-label="cssclasses key" i]),:has([aria-label="category key" i]),:has([aria-label="categories key" i])) > .md-meta-key-icon { display: none; }
+:is(.ty-document, .typora-export) .md-meta-key:is(:has([aria-label="title key" i]),:has([aria-label="subtitle key" i]),:has([aria-label="author key" i]),:has([aria-label="date key" i]),:has([aria-label="created key" i]),:has([aria-label="updated key" i]),:has([aria-label="modified key" i]),:has([aria-label="published key" i]),:has([aria-label="source key" i]),:has([aria-label="description key" i]),:has([aria-label="tags key" i]),:has([aria-label="theme key" i]),:has([aria-label="cssclasses key" i]),:has([aria-label="category key" i]),:has([aria-label="categories key" i]))::before { content: ""; flex: none; width: 13px; height: 13px; margin-inline-end: 6px; background: var(--color-accent); }
+:is(.ty-document, .typora-export) .md-meta-key:has([aria-label="title key" i])::before { -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d=%22M12 4v16%22/%3E%3Cpath d=%22M4 7V5a1 1 0 0 1 1-1h14a1 1 0 0 1 1 1v2%22/%3E%3Cpath d=%22M9 20h6%22/%3E%3C/svg%3E") center / contain no-repeat; mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d=%22M12 4v16%22/%3E%3Cpath d=%22M4 7V5a1 1 0 0 1 1-1h14a1 1 0 0 1 1 1v2%22/%3E%3Cpath d=%22M9 20h6%22/%3E%3C/svg%3E") center / contain no-repeat; }
+:is(.ty-document, .typora-export) .md-meta-key:has([aria-label="subtitle key" i])::before { -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d=%22M6 12h12%22/%3E%3Cpath d=%22M6 20V4%22/%3E%3Cpath d=%22M18 20V4%22/%3E%3C/svg%3E") center / contain no-repeat; mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d=%22M6 12h12%22/%3E%3Cpath d=%22M6 20V4%22/%3E%3Cpath d=%22M18 20V4%22/%3E%3C/svg%3E") center / contain no-repeat; }
+:is(.ty-document, .typora-export) .md-meta-key:has([aria-label="author key" i])::before { -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d=%22M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2%22/%3E%3Ccircle cx=%2212%22 cy=%227%22 r=%224%22/%3E%3C/svg%3E") center / contain no-repeat; mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d=%22M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2%22/%3E%3Ccircle cx=%2212%22 cy=%227%22 r=%224%22/%3E%3C/svg%3E") center / contain no-repeat; }
+:is(.ty-document, .typora-export) .md-meta-key:has([aria-label="date key" i])::before { -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d=%22M8 2v4%22/%3E%3Cpath d=%22M16 2v4%22/%3E%3Crect width=%2218%22 height=%2218%22 x=%223%22 y=%224%22 rx=%222%22/%3E%3Cpath d=%22M3 10h18%22/%3E%3C/svg%3E") center / contain no-repeat; mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d=%22M8 2v4%22/%3E%3Cpath d=%22M16 2v4%22/%3E%3Crect width=%2218%22 height=%2218%22 x=%223%22 y=%224%22 rx=%222%22/%3E%3Cpath d=%22M3 10h18%22/%3E%3C/svg%3E") center / contain no-repeat; }
+:is(.ty-document, .typora-export) .md-meta-key:has([aria-label="created key" i])::before { -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx=%2212%22 cy=%2212%22 r=%2210%22/%3E%3Cpath d=%22M8 12h8%22/%3E%3Cpath d=%22M12 8v8%22/%3E%3C/svg%3E") center / contain no-repeat; mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx=%2212%22 cy=%2212%22 r=%2210%22/%3E%3Cpath d=%22M8 12h8%22/%3E%3Cpath d=%22M12 8v8%22/%3E%3C/svg%3E") center / contain no-repeat; }
+:is(.ty-document, .typora-export) .md-meta-key:has([aria-label="updated key" i])::before { -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d=%22M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8%22/%3E%3Cpath d=%22M21 3v5h-5%22/%3E%3Cpath d=%22M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16%22/%3E%3Cpath d=%22M8 16H3v5%22/%3E%3C/svg%3E") center / contain no-repeat; mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d=%22M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8%22/%3E%3Cpath d=%22M21 3v5h-5%22/%3E%3Cpath d=%22M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16%22/%3E%3Cpath d=%22M8 16H3v5%22/%3E%3C/svg%3E") center / contain no-repeat; }
+:is(.ty-document, .typora-export) .md-meta-key:has([aria-label="published key" i])::before { -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d=%22m22 2-7 20-4-9-9-4Z%22/%3E%3Cpath d=%22M22 2 11 13%22/%3E%3C/svg%3E") center / contain no-repeat; mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d=%22m22 2-7 20-4-9-9-4Z%22/%3E%3Cpath d=%22M22 2 11 13%22/%3E%3C/svg%3E") center / contain no-repeat; }
+:is(.ty-document, .typora-export) .md-meta-key:has([aria-label="source key" i])::before { -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d=%22M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71%22/%3E%3Cpath d=%22M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71%22/%3E%3C/svg%3E") center / contain no-repeat; mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d=%22M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71%22/%3E%3Cpath d=%22M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71%22/%3E%3C/svg%3E") center / contain no-repeat; }
+:is(.ty-document, .typora-export) .md-meta-key:has([aria-label="description key" i])::before { -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d=%22M15 12H3%22/%3E%3Cpath d=%22M17 18H3%22/%3E%3Cpath d=%22M21 6H3%22/%3E%3C/svg%3E") center / contain no-repeat; mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d=%22M15 12H3%22/%3E%3Cpath d=%22M17 18H3%22/%3E%3Cpath d=%22M21 6H3%22/%3E%3C/svg%3E") center / contain no-repeat; }
+:is(.ty-document, .typora-export) .md-meta-key:has([aria-label="tags key" i])::before { -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d=%22M12.586 2.586A2 2 0 0 0 11.172 2H4a2 2 0 0 0-2 2v7.172a2 2 0 0 0 .586 1.414l8.704 8.704a2.426 2.426 0 0 0 3.42 0l6.58-6.58a2.426 2.426 0 0 0 0-3.42z%22/%3E%3Ccircle cx=%227.5%22 cy=%227.5%22 r=%22.5%22/%3E%3C/svg%3E") center / contain no-repeat; mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d=%22M12.586 2.586A2 2 0 0 0 11.172 2H4a2 2 0 0 0-2 2v7.172a2 2 0 0 0 .586 1.414l8.704 8.704a2.426 2.426 0 0 0 3.42 0l6.58-6.58a2.426 2.426 0 0 0 0-3.42z%22/%3E%3Ccircle cx=%227.5%22 cy=%227.5%22 r=%22.5%22/%3E%3C/svg%3E") center / contain no-repeat; }
+:is(.ty-document, .typora-export) .md-meta-key:has([aria-label="theme key" i])::before { -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx=%2213.5%22 cy=%226.5%22 r=%22.5%22/%3E%3Ccircle cx=%2217.5%22 cy=%2210.5%22 r=%22.5%22/%3E%3Ccircle cx=%228.5%22 cy=%227.5%22 r=%22.5%22/%3E%3Ccircle cx=%226.5%22 cy=%2212.5%22 r=%22.5%22/%3E%3Cpath d=%22M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.555-2.503 5.555-5.554C21.965 6.012 17.461 2 12 2z%22/%3E%3C/svg%3E") center / contain no-repeat; mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx=%2213.5%22 cy=%226.5%22 r=%22.5%22/%3E%3Ccircle cx=%2217.5%22 cy=%2210.5%22 r=%22.5%22/%3E%3Ccircle cx=%228.5%22 cy=%227.5%22 r=%22.5%22/%3E%3Ccircle cx=%226.5%22 cy=%2212.5%22 r=%22.5%22/%3E%3Cpath d=%22M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.555-2.503 5.555-5.554C21.965 6.012 17.461 2 12 2z%22/%3E%3C/svg%3E") center / contain no-repeat; }
+:is(.ty-document, .typora-export) .md-meta-key:has([aria-label="cssclasses key" i])::before { -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d=%22m18 16 4-4-4-4%22/%3E%3Cpath d=%22m6 8-4 4 4 4%22/%3E%3Cpath d=%22m14.5 4-5 16%22/%3E%3C/svg%3E") center / contain no-repeat; mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d=%22m18 16 4-4-4-4%22/%3E%3Cpath d=%22m6 8-4 4 4 4%22/%3E%3Cpath d=%22m14.5 4-5 16%22/%3E%3C/svg%3E") center / contain no-repeat; }
+:is(.ty-document, .typora-export) .md-meta-key:has([aria-label="category key" i])::before { -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d=%22M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z%22/%3E%3C/svg%3E") center / contain no-repeat; mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d=%22M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z%22/%3E%3C/svg%3E") center / contain no-repeat; }
+:is(.ty-document, .typora-export) .md-meta-key:has([aria-label="modified key" i])::before { -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d=%22M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8%22/%3E%3Cpath d=%22M21 3v5h-5%22/%3E%3Cpath d=%22M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16%22/%3E%3Cpath d=%22M8 16H3v5%22/%3E%3C/svg%3E") center / contain no-repeat; mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d=%22M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8%22/%3E%3Cpath d=%22M21 3v5h-5%22/%3E%3Cpath d=%22M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16%22/%3E%3Cpath d=%22M8 16H3v5%22/%3E%3C/svg%3E") center / contain no-repeat; }
+:is(.ty-document, .typora-export) .md-meta-key:has([aria-label="categories key" i])::before { -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d=%22M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z%22/%3E%3C/svg%3E") center / contain no-repeat; mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d=%22M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z%22/%3E%3C/svg%3E") center / contain no-repeat; }
+
+/* On the corner of the front-matter card. */
+:is(.ty-document, .typora-export) .md-meta-block {
+  position: relative;
+}
+:is(.ty-document, .typora-export) .md-meta-block::after {
+  content: "";
+  position: absolute;
+  /* Bottom-right: the top-right corner holds Typora's fold / field / YAML toggles. */
+  bottom: 8px;
+  right: 12px;
+  width: calc(var(--theme-ib-cats, 0) * 72px);
+  height: calc(var(--theme-ib-cats, 0) * 50px);
+  background: var(--ib-cats-sm) center / contain no-repeat;
+  opacity: 0.9;
+  pointer-events: none;
+}
+@media print {
+  .ty-document::after,
+  .typora-export-content::after { content: none; }
+}
+
+/* ---------- export: HTML blocks show their rendered preview only, not the source ---------- */
+.typora-export .md-html-block-preview ~ .md-html-block-inner {
+  display: none;
+}
+
+/* ---------- HTML comments (e.g. `<!-- layout: cover | tag -->`) ---------- */
+/* A comment has nothing to preview, so Typora shows its source. Style that as a
+   small muted label instead of a stray monospace block; it stays editable. */
+.ty-document .md-html-block:has(> .md-html-block-preview[data-empty="true"]) {
+  width: fit-content;
+  max-width: 100%;
+  margin: 0.5em 0;
+  padding: 3px 12px;
+  border: 1px dashed var(--ib-line);
+  border-radius: 10px;
+  background: transparent;
+}
+.ty-document .md-html-block:has(> .md-html-block-preview[data-empty="true"]) .md-html-block-inner {
+  color: var(--color-muted);
+  font-family: var(--font-sans, inherit);
+  font-size: 0.78em;
+  line-height: 1.6;
+}
+.ty-document .md-html-block:has(> .md-html-block-preview[data-empty="true"]) .md-html-block-inner .md-hl {
+  color: inherit;
+}
+
+/* Diagrams (Mermaid, drawn by Typora's pele): the renderer reads these two variables from the computed
+   style when it draws, so node fills and borders are a neutral mix of paper and ink: it sits quietly under every palette.
+   The renderer rejects color-mix(), hence precomputed hex values from the palette generator. */
+:root:not(#_a):not(#_b), body:not(#_a):not(#_b), .ty-document:not(#_a):not(#_b) {
+  --color-muted-bg: var(--theme-diagram-fill);
+  --color-code-border: var(--theme-diagram-border);
+}
+
+/* Heading numbers. The editor wraps heading text in a block div.ty-inlines, so the number goes on
+   that div's ::before to stay on the same line; exported HTML has plain h2/h3. The variant sets
+   --theme-h2-num / --theme-h3-num to a counter() expression or "". */
+:is(.ty-document, .typora-export) :is(.md-h1, h1) { counter-reset: ib-h2 ib-h3; }
+:is(.ty-document, .typora-export) :is(.md-h2, h2) { counter-increment: ib-h2; counter-reset: ib-h3; }
+:is(.ty-document, .typora-export) :is(.md-h3, h3) { counter-increment: ib-h3; }
+.ty-document .md-h2 > .ty-inlines::before,
+.typora-export h2::before { content: var(--theme-h2-num); color: var(--color-accent); margin-inline-end: 0.15em; }
+.ty-document .md-h3 > .ty-inlines::before,
+.typora-export h3::before { content: var(--theme-h3-num); color: var(--color-accent); margin-inline-end: 0.15em; }
+
+/* Table crosshair: the hovered cell's row and column get an overlay. It is a background-image,
+   so the header and zebra background colours stay; the variant sets --theme-cross-tint
+   (transparent when off). Columns are matched by index, up to 12. */
+:is(.ty-document, .typora-export) .md-table tr:hover > :is(td, th),
+:is(.ty-document, .typora-export) .md-table:has(:is(td, th):nth-child(1):hover) :is(td, th):nth-child(1),
+:is(.ty-document, .typora-export) .md-table:has(:is(td, th):nth-child(2):hover) :is(td, th):nth-child(2),
+:is(.ty-document, .typora-export) .md-table:has(:is(td, th):nth-child(3):hover) :is(td, th):nth-child(3),
+:is(.ty-document, .typora-export) .md-table:has(:is(td, th):nth-child(4):hover) :is(td, th):nth-child(4),
+:is(.ty-document, .typora-export) .md-table:has(:is(td, th):nth-child(5):hover) :is(td, th):nth-child(5),
+:is(.ty-document, .typora-export) .md-table:has(:is(td, th):nth-child(6):hover) :is(td, th):nth-child(6),
+:is(.ty-document, .typora-export) .md-table:has(:is(td, th):nth-child(7):hover) :is(td, th):nth-child(7),
+:is(.ty-document, .typora-export) .md-table:has(:is(td, th):nth-child(8):hover) :is(td, th):nth-child(8),
+:is(.ty-document, .typora-export) .md-table:has(:is(td, th):nth-child(9):hover) :is(td, th):nth-child(9),
+:is(.ty-document, .typora-export) .md-table:has(:is(td, th):nth-child(10):hover) :is(td, th):nth-child(10),
+:is(.ty-document, .typora-export) .md-table:has(:is(td, th):nth-child(11):hover) :is(td, th):nth-child(11),
+:is(.ty-document, .typora-export) .md-table:has(:is(td, th):nth-child(12):hover) :is(td, th):nth-child(12) {
+  background-image: linear-gradient(var(--theme-cross-tint), var(--theme-cross-tint));
+}
