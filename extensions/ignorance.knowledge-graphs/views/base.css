@@ -1,0 +1,36 @@
+:root {
+  color: var(--typora-foreground);
+  background: var(--typora-background);
+  font: 14px/1.55 system-ui, sans-serif;
+}
+body { margin: 0; }
+main { padding: 8px; overflow-x: auto; }
+section + section { margin-top: 16px; }
+h3 { font-size: 1em; margin: 0 0 4px; }
+p { margin: 0; }
+table { border-collapse: collapse; width: 100%; }
+th, td { text-align: left; border-bottom: 1px solid var(--typora-border); padding: 5px 8px; overflow-wrap: anywhere; }
+ul { padding-inline-start: 1.4em; margin: 4px 0; }
+button {
+  color: var(--typora-accent);
+  background: transparent;
+  border: 0;
+  padding: 0;
+  text-align: left;
+  font: inherit;
+  text-decoration: underline;
+  cursor: pointer;
+}
+svg { display: block; max-width: 100%; height: auto; min-width: 0; }
+input[type="search"] {
+  color: var(--typora-foreground);
+  background: var(--typora-background);
+  border: 1px solid var(--typora-border);
+  border-radius: 4px;
+  box-sizing: border-box;
+  padding: 6px 8px;
+  width: 100%;
+  margin-bottom: 10px;
+  font: inherit;
+}
+button:disabled { opacity: .55; cursor: default; }

@@ -1,0 +1,6 @@
+{
+  "vendor/js-yaml.js": {
+    "from": "npm:js-yaml@4.3.2/dist/js-yaml.js",
+    "sha256": "735920e03dbd70263913b645d2b1a715938d836043f3e8709b320ccdf299bdbb"
+  }
+}

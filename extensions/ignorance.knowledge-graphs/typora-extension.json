@@ -1,0 +1,73 @@
+{
+  "id": "ignorance.knowledge-graphs",
+  "name": "Ignorance Knowledge Graphs",
+  "version": "0.1.0",
+  "description": "工作区笔记的双链关系图：节点、链接、层级、任务和模型整理建议。",
+  "author": "Ignorance",
+  "repository": "https://github.com/ignorance-shiyao/ignorance-for-typora",
+  "keywords": [
+    "knowledge graph",
+    "backlinks",
+    "wikilinks",
+    "note graph",
+    "obsidian"
+  ],
+  "tags": [
+    "Markdown Extension",
+    "Productivity",
+    "AI"
+  ],
+  "engines": {
+    "typora": ">=2.0.0"
+  },
+  "main": "main.js",
+  "activationEvents": [
+    "onStartupFinished",
+    "onCommand:rebuild-graph"
+  ],
+  "permissions": {
+    "workspace": "read",
+    "document": "read",
+    "ai": true
+  },
+  "contributes": {
+    "commands": [
+      {
+        "id": "rebuild-graph",
+        "title": "重建图谱索引",
+        "category": "图谱"
+      }
+    ],
+    "detailViews": [
+      {
+        "id": "graph",
+        "title": "图谱",
+        "icon": "network",
+        "entry": "views/graph.html"
+      }
+    ],
+    "configuration": {
+      "title": "Ignorance Knowledge Graphs",
+      "properties": {
+        "excludeFolders": {
+          "type": "string",
+          "title": "排除目录",
+          "default": "templates/, archive/"
+        },
+        "graphAi": {
+          "type": "boolean",
+          "title": "图谱模型整理",
+          "default": false,
+          "description": "点击图谱详情里的整理建议时，把当前笔记节选和候选笔记路径发给「智能」设置里选的模型。"
+        },
+        "graphAiMaxChars": {
+          "type": "number",
+          "title": "发送正文字数上限",
+          "default": 3000,
+          "minimum": 500,
+          "maximum": 12000
+        }
+      }
+    }
+  }
+}
