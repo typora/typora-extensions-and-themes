@@ -1,12 +1,12 @@
 name: PR report
 
 # The review comment and the review-policy status (scripts/pr-report.mjs),
-# after the checks finish or a review comes in. Trusted: the base branch's
+# after the checks finish. Trusted: the base branch's
 # scripts with a write token. The results it downloads were made from the
 # pull request's files and are only read as data.
 on:
   workflow_run:
-    workflows: [PR checks, PR review submitted]
+    workflows: [PR checks]
     types: [completed]
 
 permissions:
@@ -22,7 +22,7 @@ concurrency:
 
 jobs:
   report:
-    if: ${{ github.event.workflow_run.event == 'pull_request' || github.event.workflow_run.event == 'pull_request_review' }}
+    if: ${{ github.event.workflow_run.event == 'pull_request' }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4

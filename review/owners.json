@@ -1,12 +1,10 @@
 {
-  "$comment": "Who may change what (scripts/review/gate.mjs, scripts/review/risk.mjs). Only maintainers edit this file (.github/CODEOWNERS).",
+  "$comment": "Who may change what (scripts/review/gate.mjs). Only maintainers edit this file (.github/CODEOWNERS).",
   "maintainers": ["abnerlee"],
-  "security": ["abnerlee"],
   "reserved": ["typora"],
   "namespaces": {
     "typora": ["@maintainers"],
     "ignorance": ["ignorance-shiyao"],
     "ignorance-shiyao": ["ignorance-shiyao"]
-  },
-  "approvals": { "low": 1, "medium": 1, "high": 1, "critical": 2 }
+  }
 }

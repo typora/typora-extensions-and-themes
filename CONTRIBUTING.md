@@ -100,14 +100,18 @@ results come back as one comment on the pull request.
 
 ## Review depth follows permissions
 
-`review-policy` passes once enough maintainers approved the current commit:
+`review-policy` passes when the checks find no errors; a maintainer's merge
+is the approval. The review comment rates the pull request's risk, which says
+how closely the maintainer reads it:
 
-| Risk | When | Approvals |
-| --- | --- | --- |
-| low | L0 (data only), no `network` | 1 |
-| medium | Ships code, or vendors a library | 1 |
-| high | Declares `network`, `document`, `workspace`, `clipboard` or `ai`; a first contribution; a new namespace; anything the checks ask a reviewer to look at | 1, who goes through every listed call |
-| critical | Declares `process`; an update that widens permissions (users consent again); a change from outside the package's namespace; tooling; a waived finding | 2, one of them from `review/owners.json` `security` (at most as many as there are maintainers besides the author) |
+| Risk | When |
+| --- | --- |
+| low | L0 (data only), no `network` |
+| medium | Ships code, or vendors a library |
+| high | Declares `network`, `document`, `workspace`, `clipboard` or `ai`; a first contribution; a new namespace; anything the checks ask a reviewer to look at |
+| critical | Declares `process`; an update that widens permissions (users consent again); a change from outside the package's namespace; tooling; a waived finding |
+
+From high up, the maintainer goes through every listed call before merging.
 
 A maintainer can accept a finding in `review/waivers.json` with the reason.
 

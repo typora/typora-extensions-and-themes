@@ -10,7 +10,7 @@ import { Findings } from "../scripts/review/findings.mjs";
 import { gate, skeleton } from "../scripts/review/gate.mjs";
 import { md } from "../scripts/review/github.mjs";
 import { nestedQuantifier } from "../scripts/review/regex.mjs";
-import { approvals, assess } from "../scripts/review/risk.mjs";
+import { assess } from "../scripts/review/risk.mjs";
 import { contrast, parseColor, themeVars } from "../scripts/review/theme.mjs";
 import { parseSource, samePublished, untar } from "../scripts/review/vendor.mjs";
 import { sha256Hex } from "../scripts/lib.mjs";
@@ -197,20 +197,11 @@ test("gate: look-alikes and undocumented permissions", () => {
   assert.equal(skeleton("Typ0ra"), skeleton("typora"));
 });
 
-test("risk follows permissions and how they change; approvals count on the current head", () => {
+test("risk follows permissions and how they change", () => {
   const rows = [{ id: "a.b", facts: { widened: true, added: ["network `https://x.io`"], permissions: { network: ["https://x.io"] }, tierNow: "L2", sensitive: true } }];
   assert.equal(assess({ rows }).level, "critical");
   assert.equal(assess({ rows: [{ id: "a.b", facts: { widened: false, added: [], permissions: {}, tierNow: "L0", sensitive: false } }] }).level, "low");
   assert.equal(assess({ findings: [{ level: "review", rule: "x" }] }).level, "high");
-  const reviews = [
-    { user: { login: "boss" }, state: "APPROVED", commit_id: "old", submitted_at: "1" },
-    { user: { login: "dev2" }, state: "APPROVED", commit_id: "head", submitted_at: "2", author_association: "MEMBER" },
-  ];
-  const team = { maintainers: ["boss", "dev2"], security: ["boss"], approvals: { critical: 2 } };
-  const result = approvals({ reviews, headSha: "head", author: "someone", owners: team, level: "critical" });
-  assert.deepEqual([result.count, result.needed, result.security, result.needSecurity], [1, 2, 0, 1]);
-  // With one maintainer, a critical change needs that one.
-  assert.equal(approvals({ reviews: [], headSha: "h", author: "x", owners: { maintainers: ["boss"], approvals: { critical: 2 } }, level: "critical" }).needed, 1);
 });
 
 test("theme colors and contrast", () => {

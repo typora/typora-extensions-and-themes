@@ -11,14 +11,13 @@
 // (scripts/permission-diff.mjs) and runtime.json (scripts/harness/harness.mjs).
 
 import { existsSync, readFileSync } from "node:fs";
-import { dirname, join } from "node:path";
+import { join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { LEVELS } from "./review/findings.mjs";
 import { gh, ghAll, md, repo, upsertComment } from "./review/github.mjs";
-import { approvals, assess } from "./review/risk.mjs";
+import { assess } from "./review/risk.mjs";
 import { gateFor } from "./pr-gate.mjs";
 
-const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 const MARKER = "<!-- typora-pr-checks -->";
 const CONTEXT = "review-policy";
 
@@ -57,16 +56,13 @@ function link(packages, headSha, f) {
   return `[\`${md(label)}\`](https://github.com/${repo()}/blob/${headSha}/${base}/${f.file}${f.line ? `#L${f.line}` : ""})`;
 }
 
-export function render({ risk, policy, rows, problems, staticResult, runtime, headSha, checks }) {
+export function render({ risk, rows, problems, staticResult, runtime, headSha, checks }) {
   const icon = { error: "❌", review: "👀", warn: "⚠️", info: "ℹ️" };
   const findings = [...cleanFindings(staticResult?.findings), ...cleanFindings(runtime?.findings)];
   const packages = staticResult?.packages ?? {};
   let out = `### Review: **${risk.level}** risk\n\n`;
   if (risk.reasons.length) out += `${risk.reasons.map((r) => `- ${r}`).join("\n")}\n\n`;
-  out += `Approvals on \`${headSha.slice(0, 7)}\`: ${policy.count}/${policy.needed}`;
-  if (policy.needSecurity) out += `, security ${policy.security}/1`;
-  out += policy.by.length ? ` (${policy.by.map((b) => md(b)).join(", ")})` : "";
-  out += `. Checks: ${md(checks)}.\n\n`;
+  out += `Checks on \`${headSha.slice(0, 7)}\`: ${md(checks)}.\n\n`;
 
   if (rows.length) {
     out += "#### Permissions\n\n| Package | Status | Version | Tier | Permissions | Change |\n| --- | --- | --- | --- | --- | --- |\n";
@@ -132,7 +128,6 @@ async function main() {
     console.log(`No open pull request has ${headSha} as its head.`);
     return;
   }
-  const owners = JSON.parse(readFileSync(join(ROOT, "review", "owners.json"), "utf8"));
   const staticResult = readJson(dir, "static.json");
   const runtime = readJson(dir, "runtime.json");
   const permissions = readJson(dir, "permissions.json");
@@ -141,24 +136,18 @@ async function main() {
   const { result: gateResult } = await gateFor(pr.number);
   const findings = [...cleanFindings(staticResult?.findings), ...cleanFindings(runtime?.findings), ...cleanFindings(gateResult.findings)];
   const risk = assess({ rows, findings, gate: gateResult.facts });
-  const reviews = await ghAll(`/repos/${repo()}/pulls/${pr.number}/reviews`);
-  const policy = approvals({ reviews, headSha, author: pr.user.login, owners, level: risk.level });
   const checks = process.env.CHECKS_CONCLUSION ?? "unknown";
 
+  // Merging is the maintainer's approval: the status only says whether the checks found errors.
   const failing = checks !== "success" || findings.some((f) => f.level === "error");
-  const approved = policy.count >= policy.needed && policy.security >= policy.needSecurity;
-  const state = failing ? "failure" : approved ? "success" : "pending";
-  const description = failing
-    ? "Checks have errors; fix them first."
-    : approved
-      ? `${risk.level} risk: approved.`
-      : `${risk.level} risk: needs ${policy.needed} maintainer approval(s)${policy.needSecurity ? ", one from security" : ""}.`;
+  const state = failing ? "failure" : "success";
+  const description = failing ? "Checks have errors; fix them first." : `${risk.level} risk: checks pass.`;
   await gh(`/repos/${repo()}/statuses/${headSha}`, {
     method: "POST",
     body: { state, context: CONTEXT, description: description.slice(0, 140), target_url: process.env.CHECKS_RUN_URL || undefined },
   });
-  await upsertComment(pr.number, MARKER, render({ risk, policy, rows, problems, staticResult, runtime, headSha, checks }));
-  console.log(`#${pr.number}: ${risk.level} risk, ${policy.count}/${policy.needed} approvals → ${state}`);
+  await upsertComment(pr.number, MARKER, render({ risk, rows, problems, staticResult, runtime, headSha, checks }));
+  console.log(`#${pr.number}: ${risk.level} risk → ${state}`);
 }
 
 if (process.argv[1] === fileURLToPath(import.meta.url))
